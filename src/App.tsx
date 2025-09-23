@@ -23,7 +23,7 @@ const App: React.FC = () => {
 
           {/* Side Navbar */}
           <aside
-            className="uk-width-1-6 uk-padding uk-flex-none"
+            className="uk-width-1-6 uk-padding uk-flex-none uk-flex uk-flex-middle uk-flex-center"
             style={{ background: "lightblue" }}
           >
             <div className="uk-text-center">
@@ -34,7 +34,7 @@ const App: React.FC = () => {
 
         {/* Footer */}
         <footer
-          className="uk-background-muted uk-padding-small uk-flex-none"
+          className="uk-background-muted uk-padding-small uk-flex-none uk-flex uk-flex-middle uk-flex-center"
           style={{ background: "lightgreen" }}
         >
           <div className="uk-container uk-text-center">

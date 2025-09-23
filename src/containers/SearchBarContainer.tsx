@@ -9,7 +9,7 @@ const SearchBarContainer: React.FC = () => {
   const placeholder = useAppSelector((state) => state.searchBar.placeholder);
   const value = useAppSelector((state) => state.searchBar.value);
   const onSearch = (searchQuery: string) => {
-    console.log(searchQuery);
+    console.log('search result: ',searchQuery);
   };
   return (
     <SearchBar
@@ -17,7 +17,8 @@ const SearchBarContainer: React.FC = () => {
       icon={icon}
       placeholder={placeholder}
       value={value}
-      onSearch={onSearch}
+      onSubmit={onSearch}
+      onClear={()=>{}}
     />
   );
 };
