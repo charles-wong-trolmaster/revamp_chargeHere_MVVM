@@ -2,8 +2,8 @@ import React from "react";
 import SearchBarContainer from "./containers/SearchBarContainer";
 import SideNavbarContainier from "./containers/SideNavBarContainer";
 import NavbarContainer from "./containers/NavBarContainer";
-import PanelManagerContainer from "./containers/PanelManagerContainer";
 import MapContainer from "./containers/MapContainer";
+import DrawersContainer from "./containers/DrawersContainer";
 
 const App: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ const App: React.FC = () => {
         {/* Main Content Area - this should expand */}
         <div className="uk-flex-1 uk-flex">
           {/* Main Content */}
-          <PanelManagerContainer />
+          <DrawersContainer />
 
           {/* Side Navbar */}
           <aside

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.0",
+    "framer-motion": "^12.23.18",
     "path": "^0.12.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
