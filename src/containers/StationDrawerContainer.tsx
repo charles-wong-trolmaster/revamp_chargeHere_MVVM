@@ -1,7 +1,7 @@
 import React from "react";
 import { useDrawerActions } from "@/hooks/useDrawerActions";
 import type { DrawerLevel } from "@/hooks/useDrawerActions";
-import Drawer from "@/components/Drawer";
+import Drawer from "@/components/LocationDrawer";
 
 interface StationDrawerContainerProps {}
 

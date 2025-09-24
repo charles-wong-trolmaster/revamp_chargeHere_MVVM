@@ -1,7 +1,6 @@
 import NavBar from "@/components/NavBar";
 import {
   NavBarItem,
-  setDirection,
   setSelectedIndex,
 } from "@/redux/features/navbar/navBarSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
@@ -23,31 +22,26 @@ const NavbarContainer: React.FC = () => {
       id: "location",
       name: "Location",
       icon: "/icons/home.svg",
-      onClick: () => console.log("Location clicked"),
     },
     {
       id: "session",
       name: "Session",
       icon: "/icons/search.svg",
-      onClick: () => console.log("Session clicked"),
     },
     {
       id: "station",
       name: "Station",
       icon: "/icons/settings.svg",
-      onClick: () => console.log("Station clicked"),
     },
     {
       id: "tariff",
       name: "Tariff",
       icon: "/icons/profile.svg",
-      onClick: () => console.log("Tariff clicked"),
     },
     {
       id: "settings",
       name: "Settings",
       icon: "/icons/gear.svg",
-      onClick: () => console.log("Settings clicked"),
     },
   ];
 

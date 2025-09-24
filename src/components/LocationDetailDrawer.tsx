@@ -8,7 +8,11 @@ interface DrawerProps {
   onItemClick: () => void;
 }
 
-const Drawer: React.FC<DrawerProps> = ({ title, onClose, onItemClick }) => {
+const LocationDetailDrawer: React.FC<DrawerProps> = ({
+  title,
+  onClose,
+  onItemClick,
+}) => {
   return (
     <div style={styles.container}>
       <div style={styles.locationsPanel}>
@@ -67,4 +71,4 @@ const Drawer: React.FC<DrawerProps> = ({ title, onClose, onItemClick }) => {
   );
 };
 
-export default Drawer;
+export default LocationDetailDrawer;

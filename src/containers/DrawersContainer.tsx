@@ -98,7 +98,16 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
   const openSubDrawer = useCallback(
     (level: DrawerLevel, force: boolean = false): void => {
       setDrawerStack((prev) => {
+        // Check if a drawer with the same ID already exists anywhere in the stack
+        const existingDrawerIndex = prev.findIndex(
+          (existingLevel) => existingLevel.id === level.id
+        );
+        if (existingDrawerIndex !== -1) {
+          return prev; // Don't add duplicate drawer - do nothing
+        }
+
         const currentLevelIndex = prev.length - 1;
+
         // Remove any levels after the current one and add the new level
         let newStack = [...prev.slice(0, currentLevelIndex + 1), level];
 
@@ -141,6 +150,18 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
     });
   }, []);
 
+  const closeFromLevel = useCallback((levelIndex: number): void => {
+    setDrawerStack((prev) => {
+      // Keep only levels up to (but not including) the specified level
+      return prev.slice(0, levelIndex);
+    });
+
+    setOpenLevels((prev) => {
+      // Keep only open levels that are less than the specified level
+      return prev.filter((openIndex) => openIndex < levelIndex);
+    });
+  }, []);
+
   const closeAllDrawers = useCallback((): void => {
     const initialLevel = createInitialLevel(selectedNavItemIndex);
     setDrawerStack([initialLevel]);
@@ -163,7 +184,7 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
               key={`${level.id || "level"}-${index}-${selectedNavItemIndex}`}
               value={{
                 openSubDrawer: (level, force) => openSubDrawer(level, force),
-                closeCurrentDrawer,
+                closeCurrentDrawer: () => closeFromLevel(index),
                 closeAllDrawers,
                 currentLevelIndex: index,
                 isLastLevel: index === drawerStack.length - 1,
