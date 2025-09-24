@@ -2,8 +2,8 @@ import React from "react";
 import SearchBarContainer from "./containers/SearchBarContainer";
 import SideNavbarContainier from "./containers/SideNavBarContainer";
 import NavbarContainer from "./containers/NavBarContainer";
-import PanelManagerContainer from "./containers/PanelManagerContainer";
 import MapContainer from "./containers/MapContainer";
+import DrawersContainer from "./containers/DrawersContainer";
 
 const App: React.FC = () => {
   return (
@@ -12,30 +12,33 @@ const App: React.FC = () => {
       <MapContainer />
 
       {/* Header - positioned at top */}
-      <div className="uk-position-absolute uk-position-top uk-width-1-1" style={{ zIndex: 1000 }}>
+      <div
+        className="uk-position-absolute uk-position-top uk-width-1-1"
+        style={{ zIndex: 1000 }}
+      >
         <SearchBarContainer />
       </div>
 
       {/* Main Panel - positioned at left */}
-      <div 
-        className="uk-position-absolute uk-position-top-left" 
-        style={{ 
-          zIndex: 1000, 
-               top: '60px', // Adjust based on header height
-          bottom: '60px' // Adjust based on footer height
+      <div
+        className="uk-position-absolute uk-position-top-left"
+        style={{
+          zIndex: 1000,
+          top: "60px", // Adjust based on header height
+          bottom: "60px", // Adjust based on footer height
         }}
       >
-        <PanelManagerContainer />
+        <DrawersContainer />
       </div>
 
       {/* Side Navbar - positioned at right */}
       <aside
         className="uk-position-absolute uk-position-top-right uk-padding uk-flex uk-flex-middle uk-flex-center"
-        style={{ 
-          background: "lightblue", 
+        style={{
+          background: "lightblue",
           zIndex: 1000,
-          top: '60px', // Adjust based on header height
-          bottom: '60px' // Adjust based on footer height
+          top: "60px", // Adjust based on header height
+          bottom: "60px", // Adjust based on footer height
         }}
       >
         <div className="uk-text-center">
