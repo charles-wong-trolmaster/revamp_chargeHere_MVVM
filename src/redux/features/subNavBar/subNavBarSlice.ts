@@ -12,7 +12,7 @@ const initialState: SubNavBarState = {
   items: [],
   direction: "vertical",
   selectedIndex: undefined,
-  selectedStyle: undefined, // Initialize as undefined or set a default style
+  selectedStyle: "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h", // Initialize as undefined or set a default style
 };
 
 export const subNavBarSlice = createSlice({

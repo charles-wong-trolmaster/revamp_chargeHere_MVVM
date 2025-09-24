@@ -2,30 +2,30 @@ import { MapState } from "@/redux/features/map/mapSlice";
 import React from "react";
 import LocationCard from "./LocationCard";
 import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css"; 
+import "mapbox-gl/dist/mapbox-gl.css";
 import { useRef, useEffect, useState } from "react";
 
 interface MapProps extends MapState {
-  bound?:number[];
+  bound?: number[];
   items: any[];
   selectedIndex?: number;
+  style?: string; 
   onSelect: (data: any) => void;
 }
 
 const Map = (props: MapProps) => {
-  const { bound, items, selectedIndex, onSelect } = props;
+  const { bound, items, selectedIndex, onSelect, style } = props;
 
-  // console.log('qqq selectedIndex', selectedIndex);
-  
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  
+
   // Add loading state
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
-  const defaultStyle = "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h";
-  const [currentStyle, setCurrentStyle] = useState(defaultStyle);
+  const defaultStyle =
+    "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h";
+  const currentStyle = style || defaultStyle;
 
   const defaultView = {
     center: [114.1585, 22.2859] as [number, number],
@@ -34,39 +34,14 @@ const Map = (props: MapProps) => {
     bearing: 0,
   };
 
-  const mapStyles = [
-    {
-      id: 0,
-      name: "Standard",
-      url: "mapbox://styles/mapbox/navigation-night-v1",
-    },
-    {
-      id: 1,
-      name: "Satellite",
-      url: "mapbox://styles/mapbox/satellite-v9",
-    },
-    {
-      id: 2,
-      name: "Dark",
-      url: "mapbox://styles/mapbox/dark-v11",
-    },
-  ];
-
-  const changeMapStyle = (styleIndex: number | null) => {
-    let newStyleUrl: string;
-
-    if (styleIndex === null) {
-      newStyleUrl = defaultStyle;
-    } else {
-      const style = mapStyles[styleIndex];
-      if (!style) return;
-      newStyleUrl = style.url;
-    }
-
-    if (mapRef.current && newStyleUrl !== currentStyle) {
+ 
+  const changeMapStyle = (newStyleUrl: string) => {
+    console.log('qqq newStyleUrl', newStyleUrl);
+    
+    if (mapRef.current ) {
+      console.log('qqq run change style');
+      
       mapRef.current.setStyle(newStyleUrl);
-      setCurrentStyle(newStyleUrl);
-
       mapRef.current.once("styledata", () => {
         setTimeout(() => {
           addClusterLayers();
@@ -110,7 +85,8 @@ const Map = (props: MapProps) => {
       // Remove existing layers and sources
       if (map.getLayer("clusters")) map.removeLayer("clusters");
       if (map.getLayer("cluster-count")) map.removeLayer("cluster-count");
-      if (map.getLayer("unclustered-point")) map.removeLayer("unclustered-point");
+      if (map.getLayer("unclustered-point"))
+        map.removeLayer("unclustered-point");
       if (map.getSource("locations")) map.removeSource("locations");
 
       map.addSource("locations", {
@@ -188,16 +164,19 @@ const Map = (props: MapProps) => {
         // Get all points in this cluster
         source.getClusterLeaves(clusterId, Infinity, 0, (err, leaves) => {
           if (err) return;
-          
+
           // Extract the location data from cluster leaves
           const clusterData = {
-            type: 'cluster',
+            type: "cluster",
             coordinates: (features[0].geometry as any).coordinates,
             pointCount: features[0].properties?.point_count,
-            locations: leaves?.map(leaf => {
-              const index = leaf.properties?.index;
-              return items[index];
-            }).filter(Boolean) || []
+            locations:
+              leaves
+                ?.map((leaf) => {
+                  const index = leaf.properties?.index;
+                  return items[index];
+                })
+                .filter(Boolean) || [],
           };
 
           // Pass cluster data to onSelect
@@ -221,16 +200,18 @@ const Map = (props: MapProps) => {
 
       // Individual point click handler - passes single location data to onSelect
       map.on("click", "unclustered-point", (e) => {
-        const coordinates = (e.features![0].geometry as any).coordinates.slice();
+        const coordinates = (
+          e.features![0].geometry as any
+        ).coordinates.slice();
         const properties = e.features![0].properties;
         const locationIndex = properties?.index;
 
         if (locationIndex !== undefined && items[locationIndex]) {
           const locationData = {
-            type: 'single',
+            type: "single",
             location: items[locationIndex],
             index: locationIndex,
-            coordinates: coordinates
+            coordinates: coordinates,
           };
 
           // Pass single location data to onSelect
@@ -276,13 +257,13 @@ const Map = (props: MapProps) => {
   const handleAreaButtonClick = () => {
     const bounds = mapRef.current?.getBounds();
     console.log("Current bounds:", bounds);
-    
+
     if (bounds) {
       // Pass bounds data to onSelect
       onSelect({
-        type: 'bounds',
+        type: "bounds",
         bounds: bounds,
-        boundsArray: bounds.toArray() 
+        boundsArray: bounds.toArray(),
       });
     }
   };
@@ -291,7 +272,7 @@ const Map = (props: MapProps) => {
   useEffect(() => {
     if (selectedIndex !== undefined && items[selectedIndex] && mapRef.current) {
       const selectedLocation = items[selectedIndex];
-      
+
       const coordinates = [
         parseFloat(selectedLocation.coordinates.longitude),
         parseFloat(selectedLocation.coordinates.latitude),
@@ -307,6 +288,14 @@ const Map = (props: MapProps) => {
       });
     }
   }, [selectedIndex, items]);
+  // React to style changes
+  useEffect(() => {
+    if (mapRef.current && currentStyle) {
+      console.log('qqq run useeffect');
+      
+      changeMapStyle(currentStyle);
+    }
+  }, [currentStyle]);
 
   // Handle bound prop changes
   // useEffect(() => {
@@ -320,7 +309,9 @@ const Map = (props: MapProps) => {
 
   useEffect(() => {
     if (mapRef.current && isMapLoaded && items.length > 0) {
-      const source = mapRef.current.getSource("locations") as mapboxgl.GeoJSONSource;
+      const source = mapRef.current.getSource(
+        "locations"
+      ) as mapboxgl.GeoJSONSource;
       if (source) {
         source.setData(createGeoJSONData());
       } else {
@@ -333,9 +324,10 @@ const Map = (props: MapProps) => {
     if (mapRef.current || !mapContainerRef.current) return;
 
     try {
-      mapboxgl.accessToken = "pk.eyJ1Ijoia2VudHJvbG1hc3RlciIsImEiOiJjbWV3aHV0bnkwNHN3MmpxeXNoYjdjeWxzIn0.1qyqP80uVoKe7UOyjlMwyA";
+      mapboxgl.accessToken =
+        "pk.eyJ1Ijoia2VudHJvbG1hc3RlciIsImEiOiJjbWV3aHV0bnkwNHN3MmpxeXNoYjdjeWxzIn0.1qyqP80uVoKe7UOyjlMwyA";
 
-      console.log("Initializing map..."); 
+      console.log("Initializing map...");
 
       mapRef.current = new mapboxgl.Map({
         style: currentStyle,
@@ -360,7 +352,7 @@ const Map = (props: MapProps) => {
 
       mapRef.current.on("load", () => {
         setIsMapLoaded(true);
-        
+
         if (items.length > 0) {
           addClusterLayers();
         }
@@ -380,7 +372,6 @@ const Map = (props: MapProps) => {
         console.error("Map error:", e);
         setMapError("Failed to load map: " + e.error?.message);
       });
-
     } catch (error) {
       console.error("Error initializing map:", error);
       setMapError("Failed to initialize map");
@@ -392,18 +383,16 @@ const Map = (props: MapProps) => {
         mapRef.current = null;
       }
     };
-  }, [])
+  }, []);
 
   return (
     <div
       id="map-container"
       className="uk-position-absolute uk-width-1-1 uk-height-1-1"
-      style={{
-      
-      }}
+      style={{}}
     >
       {!isMapLoaded && !mapError && (
-        <div 
+        <div
           style={{
             position: "absolute",
             top: 0,
@@ -422,7 +411,7 @@ const Map = (props: MapProps) => {
       )}
 
       {mapError && (
-        <div 
+        <div
           style={{
             position: "absolute",
             top: 0,

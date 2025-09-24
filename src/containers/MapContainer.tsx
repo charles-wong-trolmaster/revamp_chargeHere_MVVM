@@ -8,6 +8,10 @@ const MapContainer: React.FC = () => {
   const bound = useAppSelector((state) => state.map.bound);
   const items = useAppSelector((state) => state.map.items);
   const selectedIndex = useAppSelector((state) => state.map.selectedIndex);
+  const selectedStyle = useAppSelector((state) => state.subNavBar.selectedStyle);
+  console.log('qqq selectedStyle', selectedStyle);
+  
+
   const onSelect = (index: number) => {
     dispatch(setSelectedIndex(index));
   };
@@ -217,7 +221,8 @@ const MapContainer: React.FC = () => {
       items={dummyItems}
       selectedIndex={selectedIndex}
       bound={bound}
-    />
+      style={selectedStyle}
+      />
   );
 };
 

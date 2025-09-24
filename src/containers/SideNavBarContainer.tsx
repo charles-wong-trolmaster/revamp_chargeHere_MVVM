@@ -1,6 +1,6 @@
 import NavBar from "@/components/NavBar";
 import { NavBarItem } from "@/redux/features/navbar/navBarSlice";
-import { setDirection } from "@/redux/features/subNavBar/subNavBarSlice";
+import { setDirection, setSelectedStyle } from "@/redux/features/subNavBar/subNavBarSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import React from "react";
 
@@ -17,10 +17,10 @@ const SideNavbarContainier: React.FC = () => {
 
   // Modified onSelect to accept the selected item and dispatch the style
   const onSelect = (selectedItem: NavBarItem) => {
-    console.log("selected:", selectedItem);
-    // Dispatch the style - you'll need to create an action for this
-    // dispatch(setMapboxStyle(selectedItem.style));
-  };
+    console.log("selected:", selectedItem.style);
+  if (selectedItem.style) {
+    dispatch(setSelectedStyle(selectedItem.style));
+  }  };
 
   const dummyNavBarItems: NavBarItem[] = [
     {
