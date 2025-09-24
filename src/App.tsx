@@ -11,37 +11,47 @@ const App: React.FC = () => {
       {/* Map Background */}
       <MapContainer />
 
-      {/* UI Layer - needs flex column structure */}
-      <div className="uk-position-absolute uk-width-1-1 uk-height-viewport uk-flex uk-flex-column">
-        {/* Header */}
+      {/* Header - positioned at top */}
+      <div className="uk-position-absolute uk-position-top uk-width-1-1" style={{ zIndex: 1000 }}>
         <SearchBarContainer />
-
-        {/* Main Content Area - this should expand */}
-        <div className="uk-flex-1 uk-flex">
-          {/* Main Content */}
-          <PanelManagerContainer />
-
-          {/* Side Navbar */}
-          <aside
-            className="uk-width-1-6 uk-padding uk-flex-none uk-flex uk-flex-middle uk-flex-center"
-            style={{ background: "lightblue" }}
-          >
-            <div className="uk-text-center">
-              <SideNavbarContainier />
-            </div>
-          </aside>
-        </div>
-
-        {/* Footer */}
-        <footer
-          className="uk-background-muted uk-padding-small uk-flex-none uk-flex uk-flex-middle uk-flex-center"
-          style={{ background: "lightgreen" }}
-        >
-          <div className="uk-container uk-text-center">
-            <NavbarContainer />
-          </div>
-        </footer>
       </div>
+
+      {/* Main Panel - positioned at left */}
+      <div 
+        className="uk-position-absolute uk-position-top-left" 
+        style={{ 
+          zIndex: 1000, 
+               top: '60px', // Adjust based on header height
+          bottom: '60px' // Adjust based on footer height
+        }}
+      >
+        <PanelManagerContainer />
+      </div>
+
+      {/* Side Navbar - positioned at right */}
+      <aside
+        className="uk-position-absolute uk-position-top-right uk-padding uk-flex uk-flex-middle uk-flex-center"
+        style={{ 
+          background: "lightblue", 
+          zIndex: 1000,
+          top: '60px', // Adjust based on header height
+          bottom: '60px' // Adjust based on footer height
+        }}
+      >
+        <div className="uk-text-center">
+          <SideNavbarContainier />
+        </div>
+      </aside>
+
+      {/* Footer - positioned at bottom */}
+      <footer
+        className="uk-position-absolute uk-position-bottom uk-width-1-1 uk-background-muted uk-padding-small uk-flex uk-flex-middle uk-flex-center"
+        style={{ background: "lightgreen", zIndex: 1000 }}
+      >
+        <div className="uk-container uk-text-center">
+          <NavbarContainer />
+        </div>
+      </footer>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import React from "react";
 import IconButton from "./IconButton";
 
 interface NavbarProps extends NavBarState {
-  onSelect: (index: number) => void;
+  onSelect: (selectedItem: NavBarItem, index: number) => void;
 }
 
 const NavBar = (props: NavbarProps) => {
@@ -12,26 +12,28 @@ const NavBar = (props: NavbarProps) => {
   return (
     <div
       className="uk-flex uk-background-muted uk-padding-small"
-      style={{ flexDirection: direction === "horizontal" ? "row" : "column" }}
     >
-      <div 
-        className={`uk-flex ${direction === "horizontal" ? "uk-flex-row" : "uk-flex-column"} uk-flex-gap-small`}
+      <ul
+        className={`uk-iconnav ${
+          direction === "horizontal" ? "" : "uk-iconnav-vertical"
+        }`}
       >
         {(items as NavBarItem[]).map((item: NavBarItem, index: number) => (
-          <IconButton
-            key={item.id || index}
-            icon={item.icon}
-            name={item.name}
-            showName={direction === "horizontal"}
-            onClick={() => {
-              onSelect(index);
-              if (item.onClick) {
-                item.onClick();
-              }
-            }}
-          />
+          <li key={item.id || index}>
+            <IconButton
+              icon={item.icon}
+              name={item.name}
+              showName={direction === "horizontal"}
+              onClick={() => {
+                onSelect(item, index); 
+                // if (item.onClick) {
+                //   item.onClick();
+                // }
+              }}
+            />
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };

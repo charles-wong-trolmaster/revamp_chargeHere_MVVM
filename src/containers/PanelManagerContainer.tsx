@@ -1,6 +1,7 @@
 import React from "react";
 
 const PanelManagerContainer: React.FC = () => {
+  return null
   return (
     <div className="uk-flex-1 uk-flex" style={{ minHeight: 0 }}>
       {/* Main Content */}
