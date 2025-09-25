@@ -93,7 +93,7 @@ const Panel: React.FC<PanelProps> = ({
               <div
                 className="uk-flex-1 uk-overflow-auto"
                 style={{
-                  maxHeight: "100%",
+                  height: "100%",
                   overflowY: "auto",
                   overflowX: "hidden",
                 }}

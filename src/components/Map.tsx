@@ -1,6 +1,5 @@
 import { MapState } from "@/redux/features/map/mapSlice";
 import React from "react";
-import LocationCard from "./LocationCard";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useRef, useEffect, useState } from "react";
@@ -9,7 +8,7 @@ interface MapProps extends MapState {
   bound?: number[];
   items: any[];
   selectedIndex?: number;
-  style?: string; 
+  style?: string;
   onSelect: (data: any) => void;
 }
 
@@ -34,13 +33,12 @@ const Map = (props: MapProps) => {
     bearing: 0,
   };
 
- 
   const changeMapStyle = (newStyleUrl: string) => {
-    console.log('qqq newStyleUrl', newStyleUrl);
-    
-    if (mapRef.current ) {
-      console.log('qqq run change style');
-      
+    console.log("qqq newStyleUrl", newStyleUrl);
+
+    if (mapRef.current) {
+      console.log("qqq run change style");
+
       mapRef.current.setStyle(newStyleUrl);
       mapRef.current.once("styledata", () => {
         setTimeout(() => {
@@ -291,8 +289,8 @@ const Map = (props: MapProps) => {
   // React to style changes
   useEffect(() => {
     if (mapRef.current && currentStyle) {
-      console.log('qqq run useeffect');
-      
+      console.log("qqq run useeffect");
+
       changeMapStyle(currentStyle);
     }
   }, [currentStyle]);

@@ -32,18 +32,24 @@ const SideNavbarContainier: React.FC = () => {
       icon: "/icons/home.svg",
       style: "mapbox://styles/mapbox/navigation-night-v1",
       onClick: () => console.log("Active clicked"),
+      showTooltip: true,
+      tooltipText: "Active",
     },
     {
       name: "Upcoming",
       icon: "/icons/search.svg",
       style: "mapbox://styles/mapbox/satellite-v9",
       onClick: () => console.log("Upcoming clicked"),
+      showTooltip: true,
+      tooltipText: "Upcoming",
     },
     {
       name: "Removed",
       icon: "/icons/settings.svg",
       style: "mapbox://styles/mapbox/dark-v11",
       onClick: () => console.log("Removed clicked"),
+      showTooltip: true,
+      tooltipText: "Removed",
     },
   ];
 
@@ -53,7 +59,6 @@ const SideNavbarContainier: React.FC = () => {
       onSelect={onSelect}
       items={dummyNavBarItems}
       selectedIndex={selectedIndex}
-      enableHover={true}
     />
   );
 };

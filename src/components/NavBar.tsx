@@ -4,11 +4,10 @@ import IconButton, { IconButtonProps } from "./IconButton";
 
 interface NavbarProps extends NavBarState {
   onSelect: (selectedItem: IconButtonProps, index: number) => void;
-  enableHover: boolean;
 }
 
 const NavBar = (props: NavbarProps) => {
-  const { direction, items, selectedIndex, onSelect, enableHover } = props;
+  const { direction, items, selectedIndex, onSelect } = props;
   const [isSelected, setIsSelected] = useState<boolean>(false);
   return (
     <div className="uk-flex uk-background-muted uk-padding-small">
@@ -21,7 +20,8 @@ const NavBar = (props: NavbarProps) => {
           (item: IconButtonProps, index: number) => (
             <li key={index}>
               <IconButton
-                enableHover={enableHover}
+                showTooltip={item.showTooltip}
+                tooltipText={item.tooltipText}
                 isSelected={selectedIndex === index}
                 icon={item.icon}
                 name={item.name}

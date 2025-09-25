@@ -9,7 +9,6 @@ export interface IconButtonProps {
   icon: string;
   name: string;
   showName?: boolean;
-  enableHover?: boolean;
   style?: string;
 }
 
@@ -23,14 +22,11 @@ const IconButton = (props: IconButtonProps) => {
     showTooltip = true,
     tooltipText,
     onHover,
-    enableHover = true,
   } = props;
 
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
-    if (!enableHover) return;
-
     setIsHovered(true);
     if (onHover) {
       onHover();
@@ -38,8 +34,6 @@ const IconButton = (props: IconButtonProps) => {
   };
 
   const handleMouseLeave = () => {
-    if (!enableHover) return;
-
     setIsHovered(false);
   };
 
@@ -55,7 +49,7 @@ const IconButton = (props: IconButtonProps) => {
           borderWidth: "2px",
           borderStyle: "solid",
           transition: "all 0.2s ease",
-          transform: enableHover && isHovered ? "scale(1.05)" : "scale(1)",
+          transform: isHovered ? "scale(1.05)" : "scale(1)",
         }}
       >
         <img src={icon} width="20" height="20" />
@@ -67,8 +61,7 @@ const IconButton = (props: IconButtonProps) => {
         )}
       </button>
 
-      {/* Tooltip - only show if hover is enabled */}
-      {enableHover && showTooltip && isHovered && (tooltipText || name) && (
+      {showTooltip && isHovered && tooltipText && (
         <div
           className="uk-position-absolute uk-background-dark uk-text-white uk-padding-small uk-border-rounded uk-text-small"
           style={{
@@ -81,7 +74,7 @@ const IconButton = (props: IconButtonProps) => {
             backgroundColor: "black",
           }}
         >
-          {tooltipText || name}
+          {tooltipText}
           <div
             className="uk-position-absolute"
             style={{

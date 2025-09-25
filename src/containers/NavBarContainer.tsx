@@ -19,22 +19,27 @@ const NavbarContainer: React.FC = () => {
     {
       name: "Location",
       icon: "/icons/home.svg",
+      showTooltip: false,
     },
     {
       name: "Session",
       icon: "/icons/search.svg",
+      showTooltip: false,
     },
     {
       name: "Station",
       icon: "/icons/settings.svg",
+      showTooltip: false,
     },
     {
       name: "Tariff",
       icon: "/icons/profile.svg",
+      showTooltip: false,
     },
     {
       name: "Settings",
       icon: "/icons/gear.svg",
+      showTooltip: false,
     },
   ];
 
@@ -44,7 +49,6 @@ const NavbarContainer: React.FC = () => {
       onSelect={onSelect}
       items={dummyNavBarItems}
       selectedIndex={selectedIndex}
-      enableHover={false}
     />
   );
 };
