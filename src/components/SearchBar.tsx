@@ -4,10 +4,6 @@ import React, { useEffect, useState } from "react";
 interface SearchBarProps extends SearchBarState {
   onClear: () => void;
   onSubmit: (searchQuery: string) => void;
-  placeholder?: string;
-  icon?: React.ReactNode;
-  enableClear?: boolean;
-  value?: string;
 }
 
 const SearchBar = (props: SearchBarProps) => {

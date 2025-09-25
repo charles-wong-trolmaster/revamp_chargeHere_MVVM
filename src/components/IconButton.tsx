@@ -5,6 +5,7 @@ export interface IconButtonProps {
   showTooltip?: boolean;
   tooltipText?: string;
   onHover?: () => void;
+  onUnHover?: () => void;
   onClick?: () => void;
   icon: string;
   name: string;
@@ -22,6 +23,7 @@ const IconButton = (props: IconButtonProps) => {
     showTooltip = true,
     tooltipText,
     onHover,
+    onUnHover,
   } = props;
 
   const [isHovered, setIsHovered] = useState(false);
@@ -35,6 +37,9 @@ const IconButton = (props: IconButtonProps) => {
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    if (onUnHover) {
+      onUnHover();
+    }
   };
 
   return (
@@ -61,7 +66,7 @@ const IconButton = (props: IconButtonProps) => {
         )}
       </button>
 
-      {showTooltip && isHovered && tooltipText && (
+      {showTooltip && tooltipText && (
         <div
           className="uk-position-absolute uk-background-dark uk-text-white uk-padding-small uk-border-rounded uk-text-small"
           style={{

@@ -1,14 +1,20 @@
 import { NavBarState } from "@/redux/features/navbar/navBarSlice";
-import React, { useState } from "react";
+import React from "react";
 import IconButton, { IconButtonProps } from "./IconButton";
+import { LocationSubNavBarIconButtonProps } from "@/redux/features/subNavBar/subNavBarSlice";
 
 interface NavbarProps extends NavBarState {
-  onSelect: (selectedItem: IconButtonProps, index: number) => void;
+  onSelect?: (
+    selectedItem: IconButtonProps | LocationSubNavBarIconButtonProps,
+    index: number
+  ) => void;
+  onHover?: (hoveredItem: IconButtonProps, index: number) => void;
+  onUnHover?: (unHoveredItem: IconButtonProps, index: number) => void;
 }
 
 const NavBar = (props: NavbarProps) => {
-  const { direction, items, selectedIndex, onSelect } = props;
-  const [isSelected, setIsSelected] = useState<boolean>(false);
+  const { direction, items, selectedIndex, onSelect, onHover, onUnHover } =
+    props;
   return (
     <div className="uk-flex uk-background-muted uk-padding-small">
       <ul
@@ -26,15 +32,9 @@ const NavBar = (props: NavbarProps) => {
                 icon={item.icon}
                 name={item.name}
                 showName={direction === "horizontal"}
-                onClick={() => {
-                  if (!isSelected) {
-                    setIsSelected(true);
-                  }
-                  onSelect(item, index);
-                  // if (item.onClick) {
-                  //   item.onClick();
-                  // }
-                }}
+                onClick={() => onSelect && onSelect(item, index)}
+                onHover={() => onHover && onHover(item, index)}
+                onUnHover={() => onUnHover && onUnHover(item, index)}
               />
             </li>
           )

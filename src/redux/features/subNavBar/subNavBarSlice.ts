@@ -1,18 +1,50 @@
+import { IconButtonProps } from "@/components/IconButton";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface SubNavBarState {
   direction: "horizontal" | "vertical";
-  items: unknown[];
+  items: IconButtonProps[] | LocationSubNavBarIconButtonProps[];
   selectedIndex?: number;
-  selectedStyle?: string; // Add this to store the current selected style
+  hoveredIndex?: number;
 }
+
+export interface LocationSubNavBarIconButtonProps extends IconButtonProps {
+  mapboxStyle?: string;
+}
+
+const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
+  {
+    name: "Active",
+    icon: "/icons/home.svg",
+    mapboxStyle: "mapbox://styles/mapbox/navigation-night-v1",
+    onClick: () => console.log("Active clicked"),
+    showTooltip: false,
+    tooltipText: "Active",
+  },
+  {
+    name: "Upcoming",
+    icon: "/icons/search.svg",
+    mapboxStyle: "mapbox://styles/mapbox/satellite-v9",
+    onClick: () => console.log("Upcoming clicked"),
+    showTooltip: false,
+    tooltipText: "Upcoming",
+  },
+  {
+    name: "Removed",
+    icon: "/icons/settings.svg",
+    mapboxStyle: "mapbox://styles/mapbox/dark-v11",
+    onClick: () => console.log("Removed clicked"),
+    showTooltip: false,
+    tooltipText: "Removed",
+  },
+];
 
 const initialState: SubNavBarState = {
   items: [],
   direction: "vertical",
   selectedIndex: undefined,
-  selectedStyle: "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h", // Initialize as undefined or set a default style
+  hoveredIndex: undefined,
 };
 
 export const subNavBarSlice = createSlice({
@@ -22,20 +54,33 @@ export const subNavBarSlice = createSlice({
     setDirection: (state, action: PayloadAction<"horizontal" | "vertical">) => {
       state.direction = action.payload;
     },
-    setItems: (state, action: PayloadAction<unknown[]>) => {
+    setItems: (
+      state,
+      action: PayloadAction<
+        IconButtonProps[] | LocationSubNavBarIconButtonProps[]
+      >
+    ) => {
       state.items = action.payload;
     },
-    setSelectedIndex: (state, action: PayloadAction<number>) => {
+    setSelectedIndex: (state, action: PayloadAction<number | undefined>) => {
       state.selectedIndex = action.payload;
     },
-    setSelectedStyle: (state, action: PayloadAction<string>) => {
-      state.selectedStyle = action.payload;
+    setHoveredIndex: (state, action: PayloadAction<number | undefined>) => {
+      state.hoveredIndex = action.payload;
+    },
+    setLocationSubNavBar: (state) => {
+      state.items = locationSubNavBarItems;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setDirection, setItems, setSelectedIndex, setSelectedStyle } =
-  subNavBarSlice.actions;
+export const {
+  setDirection,
+  setItems,
+  setSelectedIndex,
+  setHoveredIndex,
+  setLocationSubNavBar,
+} = subNavBarSlice.actions;
 
 export default subNavBarSlice.reducer;

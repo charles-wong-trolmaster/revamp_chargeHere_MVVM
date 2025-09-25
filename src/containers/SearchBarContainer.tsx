@@ -1,4 +1,5 @@
 import SearchBar from "@/components/SearchBar";
+import { setValue } from "@/redux/features/searchBar/searchBarSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import React from "react";
 
@@ -9,8 +10,12 @@ const SearchBarContainer: React.FC = () => {
   const placeholder = useAppSelector((state) => state.searchBar.placeholder);
   const value = useAppSelector((state) => state.searchBar.value);
   const onSearch = (searchQuery: string) => {
-    console.log('search result: ',searchQuery);
+    dispatch(setValue(searchQuery));
   };
+  const onClear = () => {
+    dispatch(setValue(""));
+  };
+
   return (
     <SearchBar
       enableClear={enableClear}
@@ -18,7 +23,7 @@ const SearchBarContainer: React.FC = () => {
       placeholder={placeholder}
       value={value}
       onSubmit={onSearch}
-      onClear={()=>{}}
+      onClear={onClear}
     />
   );
 };
