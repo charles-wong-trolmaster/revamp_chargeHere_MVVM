@@ -1,14 +1,15 @@
-import { NavBarItem, NavBarState } from "@/redux/features/navbar/navBarSlice";
-import React from "react";
-import IconButton from "./IconButton";
+import { NavBarState } from "@/redux/features/navbar/navBarSlice";
+import React, { useState } from "react";
+import IconButton, { IconButtonProps } from "./IconButton";
 
 interface NavbarProps extends NavBarState {
-  onSelect: (selectedItem: NavBarItem, index: number) => void;
+  onSelect: (selectedItem: IconButtonProps, index: number) => void;
+  enableHover: boolean;
 }
 
 const NavBar = (props: NavbarProps) => {
-  const { direction, items, selectedIndex, onSelect } = props;
-
+  const { direction, items, selectedIndex, onSelect, enableHover } = props;
+  const [isSelected, setIsSelected] = useState<boolean>(false);
   return (
     <div className="uk-flex uk-background-muted uk-padding-small">
       <ul
@@ -16,21 +17,28 @@ const NavBar = (props: NavbarProps) => {
           direction === "horizontal" ? "" : "uk-iconnav-vertical"
         }`}
       >
-        {(items as NavBarItem[]).map((item: NavBarItem, index: number) => (
-          <li key={item.id || index}>
-            <IconButton
-              icon={item.icon}
-              name={item.name}
-              showName={direction === "horizontal"}
-              onClick={() => {
-                onSelect(item, index);
-                // if (item.onClick) {
-                //   item.onClick();
-                // }
-              }}
-            />
-          </li>
-        ))}
+        {(items as IconButtonProps[]).map(
+          (item: IconButtonProps, index: number) => (
+            <li key={index}>
+              <IconButton
+                enableHover={enableHover}
+                isSelected={selectedIndex === index}
+                icon={item.icon}
+                name={item.name}
+                showName={direction === "horizontal"}
+                onClick={() => {
+                  if (!isSelected) {
+                    setIsSelected(true);
+                  }
+                  onSelect(item, index);
+                  // if (item.onClick) {
+                  //   item.onClick();
+                  // }
+                }}
+              />
+            </li>
+          )
+        )}
       </ul>
     </div>
   );

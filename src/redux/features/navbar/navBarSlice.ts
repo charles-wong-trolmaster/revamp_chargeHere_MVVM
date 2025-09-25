@@ -1,17 +1,11 @@
+import { IconButtonProps } from "@/components/IconButton";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-export interface NavBarItem {
-  id: string;
-  name?: string;
-  icon: string;
-  style?: string; // Add this line for the mapbox style
-  onClick?: () => void;
-}
 
 export interface NavBarState {
   direction: "horizontal" | "vertical";
-  items: NavBarItem[];
+  items: IconButtonProps[];
   selectedIndex?: number;
 }
 
@@ -28,7 +22,7 @@ export const navBarSlice = createSlice({
     setDirection: (state, action: PayloadAction<"horizontal" | "vertical">) => {
       state.direction = action.payload;
     },
-    setItems: (state, action: PayloadAction<NavBarItem[]>) => {
+    setItems: (state, action: PayloadAction<IconButtonProps[]>) => {
       state.items = action.payload;
     },
     setSelectedIndex: (state, action: PayloadAction<number>) => {

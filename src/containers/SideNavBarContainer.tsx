@@ -1,6 +1,9 @@
+import { IconButtonProps } from "@/components/IconButton";
 import NavBar from "@/components/NavBar";
-import { NavBarItem } from "@/redux/features/navbar/navBarSlice";
-import { setDirection, setSelectedStyle } from "@/redux/features/subNavBar/subNavBarSlice";
+import {
+  setSelectedIndex,
+  setSelectedStyle,
+} from "@/redux/features/subNavBar/subNavBarSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import React from "react";
 
@@ -15,30 +18,28 @@ const SideNavbarContainier: React.FC = () => {
     (state) => state.subNavBar.selectedStyle
   );
 
-  // Modified onSelect to accept the selected item and dispatch the style
-  const onSelect = (selectedItem: NavBarItem) => {
+  const onSelect = (selectedItem: IconButtonProps, index: number) => {
     console.log("selected:", selectedItem.style);
-  if (selectedItem.style) {
-    dispatch(setSelectedStyle(selectedItem.style));
-  }  };
+    if (selectedItem.style) {
+      dispatch(setSelectedStyle(selectedItem.style));
+      dispatch(setSelectedIndex(index));
+    }
+  };
 
-  const dummyNavBarItems: NavBarItem[] = [
+  const dummyNavBarItems: IconButtonProps[] = [
     {
-      id: "active",
       name: "Active",
       icon: "/icons/home.svg",
       style: "mapbox://styles/mapbox/navigation-night-v1",
       onClick: () => console.log("Active clicked"),
     },
     {
-      id: "upcoming",
       name: "Upcoming",
       icon: "/icons/search.svg",
       style: "mapbox://styles/mapbox/satellite-v9",
       onClick: () => console.log("Upcoming clicked"),
     },
     {
-      id: "removed",
       name: "Removed",
       icon: "/icons/settings.svg",
       style: "mapbox://styles/mapbox/dark-v11",
@@ -52,6 +53,7 @@ const SideNavbarContainier: React.FC = () => {
       onSelect={onSelect}
       items={dummyNavBarItems}
       selectedIndex={selectedIndex}
+      enableHover={true}
     />
   );
 };
