@@ -1,6 +1,11 @@
 import React from "react";
 
 interface IconButtonProps {
+  isSelected: boolean;
+  isHovered: boolean;
+  showTooltip?: boolean;
+  tooltipText?: string;
+  onHover?: () => void;
   onClick?: () => void;
   icon: string;
   name?: string;
@@ -17,7 +22,7 @@ const IconButton = (props: IconButtonProps) => {
     >
       <img src={icon} width="20" height="20" />
 
-      {showName && name && (
+      {showName && (
         <span className="uk-text-small uk-text-bold uk-display-block uk-margin-small-top">
           {name}
         </span>
