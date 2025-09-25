@@ -47,7 +47,6 @@ const SideNavbarContainier: React.FC = () => {
       ...item,
       showTooltip: i === index,
     }));
-
     dispatch(setHoveredIndex(index));
     dispatch(setItems(clonedItems));
 
