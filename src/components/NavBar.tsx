@@ -10,9 +10,7 @@ const NavBar = (props: NavbarProps) => {
   const { direction, items, selectedIndex, onSelect } = props;
 
   return (
-    <div
-      className="uk-flex uk-background-muted uk-padding-small"
-    >
+    <div className="uk-flex uk-background-muted uk-padding-small">
       <ul
         className={`uk-iconnav ${
           direction === "horizontal" ? "" : "uk-iconnav-vertical"
@@ -25,7 +23,7 @@ const NavBar = (props: NavbarProps) => {
               name={item.name}
               showName={direction === "horizontal"}
               onClick={() => {
-                onSelect(item, index); 
+                onSelect(item, index);
                 // if (item.onClick) {
                 //   item.onClick();
                 // }

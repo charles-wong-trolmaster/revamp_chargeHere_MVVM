@@ -11,16 +11,16 @@ interface SearchBarProps extends SearchBarState {
 }
 
 const SearchBar = (props: SearchBarProps) => {
-  const { 
-    enableClear = true, 
-    placeholder = "Search...", 
-    value = "", 
-    icon, 
+  const {
+    enableClear = true,
+    placeholder = "Search...",
+    value = "",
+    icon,
     onSubmit,
-    onClear 
+    onClear,
   } = props;
-  
-  const [inputValue, setInputValue] = useState<string>(value); 
+
+  const [inputValue, setInputValue] = useState<string>(value);
 
   useEffect(() => {
     setInputValue(value);
@@ -50,11 +50,11 @@ const SearchBar = (props: SearchBarProps) => {
       <div className="uk-container uk-text-center">
         <form onSubmit={handleSubmit} className="uk-search uk-search-default">
           <div className="uk-inline uk-width-1-1">
-            {icon && (
+            {/* {icon && (
               <span className="uk-form-icon">
                 {icon}
               </span>
-            )}
+            )} */}
             <input
               className="uk-search-input"
               type="search"

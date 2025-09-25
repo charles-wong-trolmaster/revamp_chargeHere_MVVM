@@ -85,6 +85,7 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
   const [drawerStack, setDrawerStack] = useState<DrawerLevel[]>(() => [
     createInitialLevel(selectedNavItemIndex),
   ]);
+
   const [openLevels, setOpenLevels] = useState<number[]>([0]);
 
   // Reset drawer stack when selectedNavItemIndex changes
@@ -195,7 +196,6 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
           );
         })}
       </div>
-
       {drawerStack.length > 1 && (
         <div className="drawer-controls">
           <button onClick={closeAllDrawers} className="reset-button">

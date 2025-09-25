@@ -1,7 +1,6 @@
-// components/MultiLevelDrawer/DrawerPanel.tsx
 import React from "react";
-import { styles } from "@/styles/(layer 1)/locationStyles";
 import { Location } from "@/interfaces/index";
+import Panel from "./Panel";
 
 interface DrawerProps {
   isFetching: boolean;
@@ -25,238 +24,230 @@ const LocationDrawer: React.FC<DrawerProps> = ({
   onItemClick,
   handleScroll,
 }) => {
-  console.log(items);
+  const renderContent = () => {
+    return (
+      <>
+        <span>hi</span>
+      </>
+    );
+  };
   return (
     items && (
-      <div style={styles.container}>
-        <div style={styles.locationsPanel}>
-          <div style={styles.locationsHeader}>
-            <span style={styles.headerTitle}>Result ({items.length})</span>
+      // <div className="uk-card uk-card-default uk-card-body uk-width-large uk-height-large uk-background-secondary">
 
-            <button style={styles.closeButton} onClick={onClose}>
-              ×
-            </button>
-          </div>
+      //   {/* Content Container */}
+      //   <div
+      //     className="uk-height-1-1 uk-overflow-auto"
+      //     style={{
+      //       maxHeight: "calc(100vh - 200px)",
+      //       paddingRight: "8px",
+      //     }}
+      //     onScroll={handleScroll}
+      //   >
+      //     {/* Loading State */}
+      //     {isLoading ? (
+      //       <div className="uk-text-center uk-padding uk-text-light">
+      //         <div uk-spinner="ratio: 1"></div>
+      //         <p className="uk-margin-small-top">Loading locations...</p>
+      //       </div>
+      //     ) : items.length > 0 ? (
+      //       /* Location Items */
+      //       <div className="uk-grid-small uk-child-width-1-1" uk-grid="">
+      //         {items.map((location) => (
+      //           <div key={location.id}>
+      //             <button
+      //               onClick={() => onItemClick(location)}
+      //               className="uk-button uk-button-default uk-width-1-1 uk-text-left uk-padding uk-border-rounded"
+      //               style={{
+      //                 background: "rgba(255, 255, 255, 0.1)",
+      //                 border: "1px solid rgba(255, 255, 255, 0.2)",
+      //                 color: "white",
+      //                 transition: "all 0.3s ease",
+      //               }}
+      //             >
+      //               <div className="uk-grid-small uk-flex-middle" uk-grid="">
+      //                 <div className="uk-width-expand">
+      //                   {/* Location Name */}
+      //                   <h4 className="uk-margin-remove uk-text-bold uk-text-light">
+      //                     {location.name}
+      //                   </h4>
 
-          <div style={styles.contentContainer}>
-            <div
-              style={{
-                position: "absolute",
-                width: "100%",
-                height: "100%",
-                transition:
-                  "opacity 0.4s ease, visibility 0.4s ease, left 0.4s ease",
-                overflowY: "auto",
-              }}
-              className="locations-list"
-              onScroll={handleScroll}
-            >
-              <div className="tab-content">
-                {isLoading ? (
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                      color: "white",
-                    }}
-                  >
-                    Loading locations...
-                  </div>
-                ) : items.length > 0 ? (
-                  items.map((location) => {
-                    // Remove the console.log or move it here if needed for debugging
-                    // console.log(location);
+      //                   {/* City */}
+      //                   <p className="uk-margin-small uk-text-muted">
+      //                     {location.city}
+      //                   </p>
 
-                    return (
-                      <button
-                        key={location.id}
-                        onClick={() => onItemClick(location)}
-                        style={styles.locationButton(true)}
-                      >
-                        <div style={styles.locationItem}>
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              marginLeft: "10px",
-                              gap: "10px",
-                              width: "100%",
-                            }}
-                          >
-                            <span style={styles.locationName}>
-                              {location.name}
-                            </span>
-                            <span style={styles.locationFieldContent}>
-                              {location.city}
-                            </span>
-                            {location.opening_times && (
-                              <div className="uk-flex">
-                                <div style={styles.locationFieldTitle}>
-                                  Open:
-                                </div>
-                                <div
-                                  style={{
-                                    marginLeft: "5px",
-                                  }}
-                                >
-                                  {location.opening_times?.twentyfourseven ? (
-                                    <span>24/7</span>
-                                  ) : (
-                                      location.opening_times?.regular_hours ??
-                                      []
-                                    ).length > 0 ? (
-                                    (() => {
-                                      const currentDay = new Date().getDay();
-                                      const regularHours =
-                                        location.opening_times?.regular_hours ??
-                                        [];
-                                      const todaysHours = regularHours.find(
-                                        (hours) => hours.weekday === currentDay
-                                      );
+      //                   {/* Opening Hours */}
+      //                   {location.opening_times && (
+      //                     <div className="uk-margin-small">
+      //                       <span className="uk-text-bold uk-text-light uk-margin-small-right">
+      //                         Open:
+      //                       </span>
+      //                       <span className="uk-text-light">
+      //                         {location.opening_times?.twentyfourseven
+      //                           ? "24/7"
+      //                           : (location.opening_times?.regular_hours ?? [])
+      //                               .length > 0
+      //                           ? (() => {
+      //                               const currentDay = new Date().getDay();
+      //                               const regularHours =
+      //                                 location.opening_times?.regular_hours ??
+      //                                 [];
+      //                               const todaysHours = regularHours.find(
+      //                                 (hours) => hours.weekday === currentDay
+      //                               );
 
-                                      if (todaysHours) {
-                                        return (
-                                          <span>
-                                            {todaysHours.period_begin} -{" "}
-                                            {todaysHours.period_end}
-                                          </span>
-                                        );
-                                      } else {
-                                        return <span>Closed today</span>;
-                                      }
-                                    })()
-                                  ) : (
-                                    <span>No data from backend</span>
-                                  )}
-                                </div>
-                              </div>
-                            )}
+      //                               if (todaysHours) {
+      //                                 return `${todaysHours.period_begin} - ${todaysHours.period_end}`;
+      //                               } else {
+      //                                 return "Closed today";
+      //                               }
+      //                             })()
+      //                           : "No data available"}
+      //                       </span>
+      //                     </div>
+      //                   )}
 
-                            <div className="uk-flex">
-                              <div
-                                style={{
-                                  alignItems: "center",
-                                  gap: "5px",
-                                  marginBottom: "8px",
-                                  width: "50%",
-                                }}
-                              >
-                                <div style={styles.locationFieldTitle}>
-                                  Stations
-                                </div>
-                                <div style={styles.locationFieldContent}>
-                                  {(location.evses ?? []).length > 0 ? (
-                                    <span>
-                                      {location.evses?.length} stations
-                                    </span>
-                                  ) : (
-                                    <span>No Evse</span>
-                                  )}
-                                </div>
-                              </div>
-                              {location.facilities &&
-                                location.facilities.length > 0 && (
-                                  <div
-                                    style={{
-                                      alignItems: "center",
-                                      gap: "5px",
-                                      marginBottom: "8px",
-                                      width: "50%",
-                                    }}
-                                  >
-                                    <div style={styles.locationFieldTitle}>
-                                      Amenities
-                                    </div>
-                                    <div
-                                      style={{
-                                        fontSize: "12px",
-                                        color: "white",
-                                      }}
-                                    >
-                                      <div className="uk-flex uk-flex-wrap">
-                                        {location.facilities.map((facility) => (
-                                          <div
-                                            style={{
-                                              padding: "5px",
-                                            }}
-                                            key={facility}
-                                          >
-                                            {/* <FacilityDisplay
-                                                    facility={facility}
-                                                  /> */}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })
-                ) : (
-                  <div style={styles.noResults}>No locations found</div>
-                )}
+      //                   {/* Bottom Info Row */}
+      //                   <div
+      //                     className="uk-grid-small uk-margin-small"
+      //                     uk-grid=""
+      //                   >
+      //                     {/* Stations Count */}
+      //                     <div className="uk-width-1-2@s">
+      //                       <div className="uk-text-small">
+      //                         <span className="uk-text-bold uk-text-light">
+      //                           Stations:{" "}
+      //                         </span>
+      //                         <span className="uk-text-light">
+      //                           {(location.evses ?? []).length > 0
+      //                             ? `${location.evses?.length} stations`
+      //                             : "No stations"}
+      //                         </span>
+      //                       </div>
+      //                     </div>
 
-                {isFetching && (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      padding: "20px",
-                      color: "rgba(255, 255, 255, 0.6)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "30px",
-                        height: "30px",
-                        border: "3px solid rgba(255, 255, 255, 0.2)",
-                        borderTop: "3px solid rgba(255, 255, 255, 0.6)",
-                        borderRadius: "50%",
-                        animation: "spin 1s linear infinite",
-                      }}
-                    ></div>
-                  </div>
-                )}
+      //                     {/* Amenities */}
+      //                     {location.facilities &&
+      //                       location.facilities.length > 0 && (
+      //                         <div className="uk-width-1-2@s">
+      //                           <div className="uk-text-small">
+      //                             <span className="uk-text-bold uk-text-light">
+      //                               Amenities:{" "}
+      //                             </span>
+      //                             <div className="uk-flex uk-flex-wrap uk-margin-small-top">
+      //                               {location.facilities
+      //                                 .slice(0, 3)
+      //                                 .map((facility, index) => (
+      //                                   <span
+      //                                     key={facility}
+      //                                     className="uk-badge uk-margin-small-right uk-margin-small-bottom"
+      //                                     style={{
+      //                                       background:
+      //                                         "rgba(255, 255, 255, 0.2)",
+      //                                       color: "white",
+      //                                       fontSize: "10px",
+      //                                     }}
+      //                                   >
+      //                                     {facility}
+      //                                   </span>
+      //                                 ))}
+      //                               {location.facilities.length > 3 && (
+      //                                 <span
+      //                                   className="uk-badge uk-margin-small-right"
+      //                                   style={{
+      //                                     background:
+      //                                       "rgba(255, 255, 255, 0.3)",
+      //                                     color: "white",
+      //                                     fontSize: "10px",
+      //                                   }}
+      //                                 >
+      //                                   +{location.facilities.length - 3} more
+      //                                 </span>
+      //                               )}
+      //                             </div>
+      //                           </div>
+      //                         </div>
+      //                       )}
+      //                   </div>
+      //                 </div>
+      //               </div>
+      //             </button>
+      //           </div>
+      //         ))}
+      //       </div>
+      //     ) : (
+      //       /* No Results */
+      //       <div className="uk-text-center uk-padding uk-text-light">
+      //         <div
+      //           uk-icon="icon: search; ratio: 2"
+      //           className="uk-margin-bottom"
+      //         ></div>
+      //         <p>No locations found</p>
+      //       </div>
+      //     )}
 
-                {!hasNextPage && items.length > 0 && !isLoading && (
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                      color: "rgba(255, 255, 255, 0.6)",
-                      fontSize: "14px",
-                    }}
-                  >
-                    All locations are shown.
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+      //     {/* Loading More Indicator */}
+      //     {isFetching && items.length > 0 && (
+      //       <div className="uk-text-center uk-padding uk-text-light">
+      //         <div uk-spinner="ratio: 0.8"></div>
+      //         <p className="uk-margin-small-top uk-text-small">
+      //           Loading more...
+      //         </p>
+      //       </div>
+      //     )}
 
-        {/* <LocationQuickFilterPanel
-              filterState={filterState}
-              updateFilter={updateFilter}
-              userLocation={userLocation}
-              onRequestLocation={getUserLocation}
-            /> */}
+      //     {/* End of Results */}
+      //     {!hasNextPage && items.length > 0 && !isLoading && (
+      //       <div className="uk-text-center uk-padding uk-text-muted">
+      //         <hr className="uk-divider-small" />
+      //         <p className="uk-text-small">All locations are shown</p>
+      //       </div>
+      //     )}
+      //   </div>
 
-        <style>
-          {`
-          ${styles.animationStyles}
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-        </style>
-      </div>
+      //   {/* Custom Styles */}
+      //   <style jsx>{`
+      //     .uk-button:hover {
+      //       background: rgba(255, 255, 255, 0.15) !important;
+      //       transform: translateY(-1px);
+      //       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      //     }
+
+      //     .uk-button:active {
+      //       transform: translateY(0);
+      //     }
+
+      //     /* Custom scrollbar */
+      //     .uk-overflow-auto::-webkit-scrollbar {
+      //       width: 6px;
+      //     }
+
+      //     .uk-overflow-auto::-webkit-scrollbar-track {
+      //       background: rgba(255, 255, 255, 0.1);
+      //       border-radius: 3px;
+      //     }
+
+      //     .uk-overflow-auto::-webkit-scrollbar-thumb {
+      //       background: rgba(255, 255, 255, 0.3);
+      //       border-radius: 3px;
+      //     }
+
+      //     .uk-overflow-auto::-webkit-scrollbar-thumb:hover {
+      //       background: rgba(255, 255, 255, 0.5);
+      //     }
+      //   `}</style>
+      // </div>
+
+      <Panel
+        isOpen={true}
+        showHeader={true}
+        headerTitle={`Result (${items.length})`}
+        onClose={() => {}}
+        width="350px"
+        height="80vh"
+        children={renderContent()}
+      ></Panel>
     )
   );
 };
