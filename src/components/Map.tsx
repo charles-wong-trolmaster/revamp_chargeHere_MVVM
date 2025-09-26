@@ -6,8 +6,8 @@ import { useRef, useEffect, useState } from "react";
 
 interface MapProps extends MapState {
   items: any[];
-  selectedIndex?: number;
-  style?: string;
+  selectedId?: string;
+  selectedStyle?: string;
   onUnclusterClick?: (uncluster: {
     id: string;
     coordinate: { lat: number; lng: number };
@@ -21,8 +21,8 @@ interface MapProps extends MapState {
 const Map = (props: MapProps) => {
   const {
     items,
-    selectedIndex,
-    style,
+    selectedId,
+    selectedStyle,
     onUnclusterClick,
     onClusterClick,
     onBoundChange,
@@ -33,13 +33,15 @@ const Map = (props: MapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const boundsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Add loading state
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
   const defaultStyle =
     "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h";
-  const currentStyle = style || defaultStyle;
+  const currentStyle = selectedStyle || defaultStyle;
 
   const defaultView = {
     center: [114.1585, 22.2859] as [number, number],
@@ -240,24 +242,38 @@ const Map = (props: MapProps) => {
   };
 
   useEffect(() => {
-    if (selectedIndex !== undefined && items[selectedIndex] && mapRef.current) {
-      const selectedLocation = items[selectedIndex];
-
-      const coordinates = [
-        parseFloat(selectedLocation.coordinates.longitude),
-        parseFloat(selectedLocation.coordinates.latitude),
-      ];
-
-      mapRef.current.flyTo({
-        center: coordinates as [number, number],
-        zoom: 16,
-        pitch: 60,
-        duration: 1500,
-        essential: true,
-        easing: (t: number) => 1 - Math.pow(1 - t, 3),
+    if (selectedId !== undefined && items.length > 0 && mapRef.current) {
+      const selectedUncluster = items.find((item) => {
+        return item.id === selectedId;
       });
+
+      if (selectedUncluster && selectedUncluster.coordinates) {
+        const coordinates = [
+          parseFloat(selectedUncluster.coordinates.longitude),
+          parseFloat(selectedUncluster.coordinates.latitude),
+        ];
+
+        mapRef.current.flyTo({
+          center: coordinates as [number, number],
+          zoom: 16,
+          pitch: 60,
+          duration: 1500,
+          essential: true,
+          easing: (t: number) => 1 - Math.pow(1 - t, 3),
+        });
+      } else {
+        mapRef.current?.flyTo({
+          center: defaultView.center,
+          zoom: defaultView.zoom,
+          pitch: defaultView.pitch,
+          bearing: defaultView.bearing,
+          duration: 3000,
+          essential: true,
+          easing: (t: number) => 1 - Math.pow(1 - t, 3),
+        });
+      }
     }
-  }, [selectedIndex, items]);
+  }, [selectedId, items]);
 
   useEffect(() => {
     if (mapRef.current && currentStyle) {
@@ -266,14 +282,24 @@ const Map = (props: MapProps) => {
   }, [currentStyle]);
 
   useEffect(() => {
-    if (mapRef.current && isMapLoaded && items.length > 0) {
+    if (mapRef.current && isMapLoaded) {
       const source = mapRef.current.getSource(
         "locations"
       ) as mapboxgl.GeoJSONSource;
-      if (source) {
-        source.setData(createGeoJSONData());
+
+      if (items.length === 0) {
+        if (source) {
+          source.setData({
+            type: "FeatureCollection",
+            features: [],
+          });
+        }
       } else {
-        addClusterLayers();
+        if (source) {
+          source.setData(createGeoJSONData());
+        } else {
+          addClusterLayers();
+        }
       }
     }
   }, [items, isMapLoaded]);
@@ -308,7 +334,6 @@ const Map = (props: MapProps) => {
       });
 
       mapRef.current.on("load", () => {
-        console.log("Map loaded, adding event listeners...");
         setIsMapLoaded(true);
         if (items.length > 0) {
           addClusterLayers();
@@ -316,27 +341,41 @@ const Map = (props: MapProps) => {
 
         if (mapRef.current) {
           mapRef.current.on("click", (e: mapboxgl.MapMouseEvent) => {
-            if (clickTimeoutRef.current) {
-              clearTimeout(clickTimeoutRef.current);
+            const map = mapRef.current!;
+            const layersToCheck = ["clusters", "unclustered-point"];
+            const existingLayers = layersToCheck.filter((layerId) =>
+              map.getLayer(layerId)
+            );
+            let hitFeature = false;
+            if (existingLayers.length > 0) {
+              const features = map.queryRenderedFeatures(e.point, {
+                layers: existingLayers,
+              });
+              hitFeature = features.length > 0;
             }
-
-            clickTimeoutRef.current = setTimeout(() => {
-              if (onMapClick) {
-                console.log("Single click executed");
-                onMapClick({
-                  lat: e.lngLat.lat,
-                  lng: e.lngLat.lng,
-                });
+            if (!hitFeature) {
+              if (clickTimeoutRef.current) {
+                clearTimeout(clickTimeoutRef.current);
               }
-            }, 300);
+              clickTimeoutRef.current = setTimeout(() => {
+                if (onMapClick) {
+                  onMapClick({
+                    lat: e.lngLat.lat,
+                    lng: e.lngLat.lng,
+                  });
+                }
+              }, 300);
+            }
           });
 
           mapRef.current.on("dblclick", (e: mapboxgl.MapMouseEvent) => {
             e.preventDefault();
+
             if (clickTimeoutRef.current) {
               clearTimeout(clickTimeoutRef.current);
               clickTimeoutRef.current = null;
             }
+
             if (onMapDoubleClick) {
               console.log("Double click executed");
               onMapDoubleClick();
@@ -344,21 +383,43 @@ const Map = (props: MapProps) => {
           });
 
           const handleBoundsChange = () => {
-            if (onBoundChange && mapRef.current) {
-              const bounds = mapRef.current.getBounds();
-              if (!bounds) return;
-              onBoundChange({
-                east: bounds.getEast(),
-                south: bounds.getSouth(),
-                west: bounds.getWest(),
-                north: bounds.getNorth(),
-              });
+            if (boundsTimeoutRef.current) {
+              clearTimeout(boundsTimeoutRef.current);
             }
+
+            boundsTimeoutRef.current = setTimeout(() => {
+              if (onBoundChange && mapRef.current) {
+                const bounds = mapRef.current.getBounds();
+                if (!bounds) return;
+
+                console.log("Bounds change executed after 3s delay");
+                onBoundChange({
+                  east: bounds.getEast(),
+                  south: bounds.getSouth(),
+                  west: bounds.getWest(),
+                  north: bounds.getNorth(),
+                });
+              }
+            }, 3000);
           };
 
-          mapRef.current.on("moveend", handleBoundsChange);
-          mapRef.current.on("zoomend", handleBoundsChange);
+          mapRef.current.on("movestart", () => {
+            console.log("Map movement started");
+          });
+
+          mapRef.current.on("move", () => {
+            handleBoundsChange();
+          });
+
+          mapRef.current.on("moveend", () => {
+            handleBoundsChange();
+          });
+
+          mapRef.current.on("zoomend", () => {
+            handleBoundsChange();
+          });
         }
+        console.log("qqq run????");
 
         mapRef.current?.flyTo({
           center: defaultView.center,
@@ -384,6 +445,10 @@ const Map = (props: MapProps) => {
       if (clickTimeoutRef.current) {
         clearTimeout(clickTimeoutRef.current);
       }
+      if (boundsTimeoutRef.current) {
+        clearTimeout(boundsTimeoutRef.current);
+      }
+
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;

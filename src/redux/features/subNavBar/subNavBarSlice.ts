@@ -18,7 +18,7 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
   {
     name: "Active",
     icon: "/icons/home.svg",
-    mapboxStyle: "mapbox://styles/mapbox/navigation-night-v1",
+    mapboxStyle: "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h",
     onClick: () => console.log("Active clicked"),
     showTooltip: false,
     tooltipText: "Active",
