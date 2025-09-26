@@ -1,4 +1,5 @@
 import { IconButtonProps } from "@/components/IconButton";
+import { RootState } from "@/redux/store";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -23,18 +24,18 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
     tooltipText: "Active",
   },
   {
-    name: "Upcoming",
+    name: "Removed",
     icon: "/icons/search.svg",
     mapboxStyle: "mapbox://styles/mapbox/satellite-v9",
-    onClick: () => console.log("Upcoming clicked"),
+    onClick: () => console.log("Removed clicked"),
     showTooltip: false,
     tooltipText: "Upcoming",
   },
   {
-    name: "Removed",
+    name: "Upcoming",
     icon: "/icons/settings.svg",
     mapboxStyle: "mapbox://styles/mapbox/dark-v11",
-    onClick: () => console.log("Removed clicked"),
+    onClick: () => console.log("Upcoming clicked"),
     showTooltip: false,
     tooltipText: "Removed",
   },
@@ -73,6 +74,20 @@ export const subNavBarSlice = createSlice({
     },
   },
 });
+
+export const getSelectedSubNavItem = (
+  state: RootState
+): IconButtonProps | undefined => {
+  const { items, selectedIndex } = state.subNavBar;
+  return selectedIndex !== undefined ? items[selectedIndex] : undefined;
+};
+
+export const getHoveredSubNavItem = (
+  state: RootState
+): IconButtonProps | undefined => {
+  const { items, hoveredIndex } = state.subNavBar;
+  return hoveredIndex !== undefined ? items[hoveredIndex] : undefined;
+};
 
 // Action creators are generated for each case reducer function
 export const {

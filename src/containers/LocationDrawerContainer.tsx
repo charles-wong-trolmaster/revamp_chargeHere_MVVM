@@ -1,41 +1,22 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useDrawerActions } from "@/hooks/useDrawerActions";
 import type { DrawerLevel } from "@/hooks/useDrawerActions";
 import LocationDetailDrawerContainer from "./LocationDetailDrawerContainer";
-import { useListManyLocationsByStatusInfiniteQuery } from "@/redux/rtk-query/endpoints/admin/locations";
-import { useGetOneLocationQuery } from "@/redux/rtk-query/endpoints/admin/locations";
 import LocationDrawer from "@/components/LocationDrawer";
 import { Location } from "@/interfaces/index";
-import LocationDetailDrawer from "@/components/LocationDetailDrawer";
+import useLocationItems from "@/hooks/useLocationItems";
 
-interface LocationDrawerContainerProps {}
-
-const LocationDrawerContainer: React.FC<LocationDrawerContainerProps> = () => {
+const LocationDrawerContainer = () => {
   const { openSubDrawer, closeCurrentDrawer } = useDrawerActions();
-
   const {
-    data: activeLocationsData,
-    isLoading: activeLocationsQueryIsLoading,
-    isError: activeLocationsQueryIsError,
-    isFetching: activeLocationsQueryIsFetching,
-    hasNextPage: activeLocationsQueryHasNextPage,
-    fetchNextPage: activeLocationsQueryFetchNextPage,
-  } = useListManyLocationsByStatusInfiniteQuery({
-    status: "ACTIVE",
-  });
-
-  const activeLocations: Location[] =
-    activeLocationsData?.pages
-      ?.flatMap((page) => page.data || page)
-      ?.map((location: Location) => ({
-        ...location,
-        derivedStatus: "ACTIVE" as const,
-      })) || [];
+    locationItems: items,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useLocationItems();
 
   const onScrollToBottom = () => {
-    if (activeLocationsQueryHasNextPage && !activeLocationsQueryIsFetching) {
-      activeLocationsQueryFetchNextPage();
-    }
+    console.log("scrolled to bottom");
   };
 
   const locationDetailDrawer: DrawerLevel = {
@@ -51,12 +32,12 @@ const LocationDrawerContainer: React.FC<LocationDrawerContainerProps> = () => {
   return (
     <LocationDrawer
       title="Location"
-      isFetching={activeLocationsQueryIsFetching}
-      isLoading={activeLocationsQueryIsLoading}
-      hasNextPage={activeLocationsQueryHasNextPage}
+      isFetching={isFetchingNextPage}
+      isLoading={isLoading}
+      hasNextPage={hasNextPage}
       handleScroll={onScrollToBottom}
       onScrollToBottom={onScrollToBottom}
-      items={activeLocations}
+      items={items}
       onClose={closeCurrentDrawer}
       onItemClick={handleItemClick}
     />

@@ -3,11 +3,7 @@ import { useDrawerActions } from "@/hooks/useDrawerActions";
 import type { DrawerLevel } from "@/hooks/useDrawerActions";
 import LocationDetailDrawer from "@/components/LocationDetailDrawer";
 
-interface LocationDetailDrawerContainerProps {}
-
-const LocationDetailDrawerContainer: React.FC<
-  LocationDetailDrawerContainerProps
-> = () => {
+const LocationDetailDrawerContainer = () => {
   const { openSubDrawer, closeCurrentDrawer } = useDrawerActions();
   const locationSubDetailDrawer: DrawerLevel = {
     id: "location-sub-detail",

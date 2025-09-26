@@ -1,4 +1,5 @@
 import { csmsClient } from "../../csms-client";
+import { Location } from "@/interfaces";
 
 const locationApi = csmsClient.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,7 +11,7 @@ const locationApi = csmsClient.injectEndpoints({
       query: (args) => {
         const {
           queryArg = { status: "", searchQuery: "" },
-          pageParam = { offset: 0, limit: 8 },
+          pageParam = { offset: 0, limit: 1000 },
         } = args;
         const { offset, limit } = pageParam;
 
@@ -39,7 +40,7 @@ const locationApi = csmsClient.injectEndpoints({
       infiniteQueryOptions: {
         initialPageParam: {
           offset: 0,
-          limit: 8,
+          limit: 1000,
         },
 
         getNextPageParam: (lastPage, allPages, lastPageParam) => {

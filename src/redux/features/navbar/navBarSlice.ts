@@ -60,14 +60,14 @@ export const navBarSlice = createSlice({
 });
 
 // Selector functions
-export const getSelectedItem = (
+export const getSelectedNavItem = (
   state: RootState
 ): IconButtonProps | undefined => {
   const { items, selectedIndex } = state.navBar;
   return selectedIndex !== undefined ? items[selectedIndex] : undefined;
 };
 
-export const getHoveredItem = (
+export const getHoveredNavItem = (
   state: RootState
 ): IconButtonProps | undefined => {
   const { items, hoveredIndex } = state.navBar;

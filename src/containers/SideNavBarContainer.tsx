@@ -1,7 +1,7 @@
 import { IconButtonProps } from "@/components/IconButton";
 import NavBar from "@/components/NavBar";
 import { setSelectedStyle } from "@/redux/features/map/mapSlice";
-import { getSelectedItem } from "@/redux/features/navbar/navBarSlice";
+import { getSelectedNavItem } from "@/redux/features/navbar/navBarSlice";
 import {
   setLocationSubNavBar,
   setItems,
@@ -14,7 +14,7 @@ import React, { useEffect } from "react";
 
 const SideNavbarContainier: React.FC = () => {
   const dispatch = useAppDispatch();
-  const selectedNavBarItem = useAppSelector(getSelectedItem);
+  const selectedNavBarItem = useAppSelector(getSelectedNavItem);
   const direction = useAppSelector((state) => state.subNavBar.direction);
   const items = useAppSelector((state) => state.subNavBar.items);
   const selectedIndex = useAppSelector(
