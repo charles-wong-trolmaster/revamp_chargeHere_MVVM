@@ -1,8 +1,8 @@
 import React from "react";
-import SearchBarContainer from "./containers/SearchBarContainer";
-import SideNavbarContainier from "./containers/SideNavBarContainer";
-import NavbarContainer from "./containers/NavBarContainer";
-import MapContainer from "./containers/MapContainer";
+import SearchBarContainer from "./containers/(searchBar)/SearchBarContainer";
+import SideNavbarContainier from "./containers/(navbar)/SideNavBarContainer";
+import NavbarContainer from "./containers/(navbar)/NavBarContainer";
+import MapContainer from "./containers/(map)/MapContainer";
 import DrawersContainer from "./containers/DrawersContainer";
 
 const App: React.FC = () => {

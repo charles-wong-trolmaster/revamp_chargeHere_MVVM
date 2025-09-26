@@ -1,12 +1,9 @@
 import React from "react";
 import { useDrawerActions } from "@/hooks/useDrawerActions";
 import type { DrawerLevel } from "@/hooks/useDrawerActions";
-import Drawer from "@/components/LocationDrawer";
 import SessionDrawer from "@/components/SessionDrawer";
 
-interface SessionDrawerContainerProps {}
-
-const SessionDrawerContainer: React.FC<SessionDrawerContainerProps> = () => {
+const SessionDrawerContainer = () => {
   const { openSubDrawer, closeCurrentDrawer } = useDrawerActions();
 
   const sessionDetailDrawer: DrawerLevel = {

@@ -7,8 +7,8 @@ import React, {
   type ReactNode,
 } from "react";
 import { useAppSelector } from "@/redux/store";
-import LocationDrawerContainer from "./LocationDrawerContainer";
-import SessionDrawerContainer from "./SessionDrawerContainer";
+import LocationDrawerContainer from "./(location)/LocationDrawerContainer";
+import SessionDrawerContainer from "./(session)/SessionDrawerContainer";
 import "./MultiLevelDrawer.css";
 
 export interface DrawerLevel {
@@ -21,6 +21,7 @@ export interface DrawerLevel {
 export interface DrawerContextValue {
   openSubDrawer: (level: DrawerLevel, force?: boolean) => void;
   closeCurrentDrawer: () => void;
+  closeCurrentSubDrawer: () => void;
   closeAllDrawers: () => void;
   currentLevelIndex: number;
   isLastLevel: boolean;
@@ -50,9 +51,6 @@ interface DrawersContainerProps {
 
 const DrawersContainer: React.FC<DrawersContainerProps> = ({
   className = "",
-  drawerWidth = 280,
-  spacing = 8,
-  height = 450,
   maxLevels = 5,
   onLevelChange,
 }) => {
@@ -138,18 +136,6 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
     [maxLevels]
   );
 
-  const closeCurrentDrawer = useCallback((): void => {
-    setDrawerStack((prev) => {
-      if (prev.length <= 1) return prev;
-      return prev.slice(0, -1);
-    });
-
-    setOpenLevels((prev) => {
-      if (prev.length <= 1) return prev;
-      return prev.slice(0, -1);
-    });
-  }, []);
-
   const closeFromLevel = useCallback((levelIndex: number): void => {
     setDrawerStack((prev) => {
       // Keep only levels up to (but not including) the specified level
@@ -185,6 +171,7 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
               value={{
                 openSubDrawer: (level, force) => openSubDrawer(level, force),
                 closeCurrentDrawer: () => closeFromLevel(index),
+                closeCurrentSubDrawer: () => closeFromLevel(index + 1),
                 closeAllDrawers,
                 currentLevelIndex: index,
                 isLastLevel: index === drawerStack.length - 1,
@@ -196,16 +183,6 @@ const DrawersContainer: React.FC<DrawersContainerProps> = ({
           );
         })}
       </div>
-      {drawerStack.length > 1 && (
-        <div className="drawer-controls">
-          <button onClick={closeAllDrawers} className="reset-button">
-            Reset All Drawers
-          </button>
-          <span className="level-indicator">
-            Level {drawerStack.length} of {maxLevels}
-          </span>
-        </div>
-      )}
     </div>
   );
 };

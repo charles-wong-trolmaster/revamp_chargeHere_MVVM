@@ -14,11 +14,16 @@ const useLocationItems = () => {
   const searchQuery = useAppSelector((state) => state.searchBar.value);
   const bounds = useAppSelector((state) => state.map.bound);
 
+  console.log(bounds);
+
   // Determine which API to use based on conditions
   const shouldUseBoundsAPI =
     navBarSelectedItem?.name === "Location" &&
     subNavbarSelectedItem?.name === "Active" &&
     searchQuery === "";
+  console.log(navBarSelectedItem?.name === "Location");
+  console.log(subNavbarSelectedItem?.name === "Active");
+  console.log(shouldUseBoundsAPI);
 
   const shouldUseStatusAPI =
     navBarSelectedItem?.name === "Location" &&

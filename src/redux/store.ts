@@ -3,7 +3,7 @@ import navBarReducer from "./features/navbar/navBarSlice";
 import mapReducer from "./features/map/mapSlice";
 import searchBarReducer from "./features/searchBar/searchBarSlice";
 import subNavBarReducer from "./features/subNavBar/subNavBarSlice";
-import locationResultReducer from "./features/location/locationResultSlice";
+import locationReducer from "./features/location/locationSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { csmsClient } from "./rtk-query/csms-client";
 
@@ -14,7 +14,7 @@ export const store = configureStore({
     navBar: navBarReducer,
     searchBar: searchBarReducer,
     subNavBar: subNavBarReducer,
-    locationResult: locationResultReducer,
+    location: locationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(csmsClient.middleware),

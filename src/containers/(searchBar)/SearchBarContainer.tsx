@@ -1,9 +1,8 @@
 import SearchBar from "@/components/SearchBar";
 import { setValue } from "@/redux/features/searchBar/searchBarSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import React from "react";
 
-const SearchBarContainer: React.FC = () => {
+const SearchBarContainer = () => {
   const dispatch = useAppDispatch();
   const enableClear = useAppSelector((state) => state.searchBar.enableClear);
   const icon = useAppSelector((state) => state.searchBar.icon);

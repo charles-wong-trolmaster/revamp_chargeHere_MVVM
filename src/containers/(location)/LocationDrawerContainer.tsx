@@ -5,8 +5,11 @@ import LocationDetailDrawerContainer from "./LocationDetailDrawerContainer";
 import LocationDrawer from "@/components/LocationDrawer";
 import { Location } from "@/interfaces/index";
 import useLocationItems from "@/hooks/useLocationItems";
+import { useAppDispatch } from "@/redux/store";
+import { setSelectedLocationId } from "@/redux/features/location/locationSlice";
 
 const LocationDrawerContainer = () => {
+  const dispatch = useAppDispatch();
   const { openSubDrawer, closeCurrentDrawer } = useDrawerActions();
   const {
     locationItems: items,
@@ -25,7 +28,9 @@ const LocationDrawerContainer = () => {
   };
 
   const handleItemClick = (item: Location) => {
-    console.log(item);
+    if (item.id) {
+      dispatch(setSelectedLocationId(item.id));
+    }
     openSubDrawer(locationDetailDrawer);
   };
 

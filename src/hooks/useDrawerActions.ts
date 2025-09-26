@@ -11,6 +11,7 @@ export interface DrawerLevel {
 interface UseDrawerActionsReturn {
   openSubDrawer: (level: DrawerLevel, force?: boolean) => void;
   closeCurrentDrawer: () => void;
+  closeCurrentSubDrawer: () => void;
   closeAllDrawers: () => void;
   canOpenSubDrawer: boolean;
   isLastLevel: boolean;
@@ -28,6 +29,7 @@ export const useDrawerActions = (): UseDrawerActionsReturn => {
     openSubDrawer,
     closeCurrentDrawer: context.closeCurrentDrawer,
     closeAllDrawers: context.closeAllDrawers,
+    closeCurrentSubDrawer: context.closeCurrentSubDrawer,
     canOpenSubDrawer: context.canOpenSubDrawer,
     isLastLevel: context.isLastLevel,
     currentLevelIndex: context.currentLevelIndex,

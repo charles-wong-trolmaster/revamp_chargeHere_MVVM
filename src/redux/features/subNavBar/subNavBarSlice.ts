@@ -44,7 +44,7 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
 const initialState: SubNavBarState = {
   items: [],
   direction: "vertical",
-  selectedIndex: undefined,
+  selectedIndex: 0,
   hoveredIndex: undefined,
 };
 

@@ -3,7 +3,7 @@ import { Location } from "@/interfaces";
 
 const locationApi = csmsClient.injectEndpoints({
   endpoints: (builder) => ({
-    getOneLocation: builder.query<any, string>({
+    getOneLocation: builder.query<Location, string>({
       query: (id) => `/admin/locations/${id}`,
       providesTags: (result, error, id) => [{ type: "Locations", id }],
     }),

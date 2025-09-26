@@ -4,14 +4,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 export interface SearchBarState {
   enableClear: boolean;
   placeholder?: string;
-  value?: string;
+  value: string;
   icon: string;
 }
 
 const initialState: SearchBarState = {
   enableClear: true,
   placeholder: undefined,
-  value: undefined,
+  value: "",
   icon: "testIcon",
 };
 
