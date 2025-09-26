@@ -1,24 +1,39 @@
-import { MapState } from "@/redux/features/map/mapSlice";
+import { Bound, MapState } from "@/redux/features/map/mapSlice";
 import React from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useRef, useEffect, useState } from "react";
 
 interface MapProps extends MapState {
-  bound?: number[];
   items: any[];
   selectedIndex?: number;
   style?: string;
-  onSelect: (data: any) => void;
+  onUnclusterClick?: (uncluster: {
+    id: string;
+    coordinate: { lat: string; lng: string };
+  }) => void;
+  onClusterClick?: (coordinate: { lat: string; lng: string }) => void;
+  onBoundChange?: (bounds: Bound) => void;
+  onMapClick?: (coordinate: { lat: string; lng: string }) => void;
+  onMapDoubleClick?: (coordinate: { lat: string; lng: string }) => void;
 }
 
 const Map = (props: MapProps) => {
-  const { bound, items, selectedIndex, onSelect, style } = props;
+  const {
+    items,
+    selectedIndex,
+    style,
+    onUnclusterClick,
+    onClusterClick,
+    onBoundChange,
+    onMapClick,
+    onMapDoubleClick,
+  } = props;
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Add loading state
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
@@ -34,11 +49,7 @@ const Map = (props: MapProps) => {
   };
 
   const changeMapStyle = (newStyleUrl: string) => {
-    console.log("qqq newStyleUrl", newStyleUrl);
-
     if (mapRef.current) {
-      console.log("qqq run change style");
-
       mapRef.current.setStyle(newStyleUrl);
       mapRef.current.once("styledata", () => {
         setTimeout(() => {
@@ -80,7 +91,6 @@ const Map = (props: MapProps) => {
     const map = mapRef.current;
 
     try {
-      // Remove existing layers and sources
       if (map.getLayer("clusters")) map.removeLayer("clusters");
       if (map.getLayer("cluster-count")) map.removeLayer("cluster-count");
       if (map.getLayer("unclustered-point"))
@@ -153,35 +163,18 @@ const Map = (props: MapProps) => {
         const features = map.queryRenderedFeatures(e.point, {
           layers: ["clusters"],
         });
-
         if (!features.length) return;
-
         const clusterId = features[0].properties?.cluster_id;
         const source = map.getSource("locations") as mapboxgl.GeoJSONSource;
 
-        // Get all points in this cluster
-        source.getClusterLeaves(clusterId, Infinity, 0, (err, leaves) => {
-          if (err) return;
+        if (onClusterClick) {
+          const coords = (features[0].geometry as any).coordinates;
+          onClusterClick({
+            lat: coords[1].toString(),
+            lng: coords[0].toString(),
+          });
+        }
 
-          // Extract the location data from cluster leaves
-          const clusterData = {
-            type: "cluster",
-            coordinates: (features[0].geometry as any).coordinates,
-            pointCount: features[0].properties?.point_count,
-            locations:
-              leaves
-                ?.map((leaf) => {
-                  const index = leaf.properties?.index;
-                  return items[index];
-                })
-                .filter(Boolean) || [],
-          };
-
-          // Pass cluster data to onSelect
-          onSelect(clusterData);
-        });
-
-        // Zoom to cluster
         source.getClusterExpansionZoom(clusterId, (err, zoom) => {
           if (err) return;
 
@@ -196,24 +189,19 @@ const Map = (props: MapProps) => {
         });
       });
 
-      // Individual point click handler - passes single location data to onSelect
       map.on("click", "unclustered-point", (e) => {
         const coordinates = (
           e.features![0].geometry as any
         ).coordinates.slice();
         const properties = e.features![0].properties;
-        const locationIndex = properties?.index;
-
-        if (locationIndex !== undefined && items[locationIndex]) {
-          const locationData = {
-            type: "single",
-            location: items[locationIndex],
-            index: locationIndex,
-            coordinates: coordinates,
-          };
-
-          // Pass single location data to onSelect
-          onSelect(locationData);
+        if (onUnclusterClick) {
+          onUnclusterClick({
+            id: properties?.id || "",
+            coordinate: {
+              lat: coordinates[1].toString(),
+              lng: coordinates[0].toString(),
+            },
+          });
         }
 
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -234,7 +222,6 @@ const Map = (props: MapProps) => {
         }, 1500);
       });
 
-      // Mouse event handlers
       map.on("mouseenter", "clusters", () => {
         map.getCanvas().style.cursor = "pointer";
       });
@@ -252,21 +239,6 @@ const Map = (props: MapProps) => {
     }
   };
 
-  const handleAreaButtonClick = () => {
-    const bounds = mapRef.current?.getBounds();
-    console.log("Current bounds:", bounds);
-
-    if (bounds) {
-      // Pass bounds data to onSelect
-      onSelect({
-        type: "bounds",
-        bounds: bounds,
-        boundsArray: bounds.toArray(),
-      });
-    }
-  };
-
-  // Handle selectedIndex prop changes
   useEffect(() => {
     if (selectedIndex !== undefined && items[selectedIndex] && mapRef.current) {
       const selectedLocation = items[selectedIndex];
@@ -286,24 +258,12 @@ const Map = (props: MapProps) => {
       });
     }
   }, [selectedIndex, items]);
-  // React to style changes
+
   useEffect(() => {
     if (mapRef.current && currentStyle) {
-      console.log("qqq run useeffect");
-
       changeMapStyle(currentStyle);
     }
   }, [currentStyle]);
-
-  // Handle bound prop changes
-  // useEffect(() => {
-  //   if (bound && mapRef.current) {
-  //     mapRef.current.fitBounds(bound, {
-  //       padding: 50,
-  //       duration: 1500
-  //     });
-  //   }
-  // }, [bound]);
 
   useEffect(() => {
     if (mapRef.current && isMapLoaded && items.length > 0) {
@@ -338,21 +298,70 @@ const Map = (props: MapProps) => {
         maxZoom: 20,
         maxPitch: 60,
         minPitch: 0,
-
         dragPan: true,
         dragRotate: true,
         scrollZoom: true,
         boxZoom: true,
-        doubleClickZoom: true,
+        doubleClickZoom: false,
         keyboard: true,
         touchZoomRotate: true,
       });
 
       mapRef.current.on("load", () => {
+        console.log("Map loaded, adding event listeners...");
         setIsMapLoaded(true);
-
         if (items.length > 0) {
           addClusterLayers();
+        }
+
+        if (mapRef.current) {
+          mapRef.current.on("click", (e: mapboxgl.MapMouseEvent) => {
+            if (clickTimeoutRef.current) {
+              clearTimeout(clickTimeoutRef.current);
+            }
+
+            clickTimeoutRef.current = setTimeout(() => {
+              if (onMapClick) {
+                console.log("Single click executed");
+                onMapClick({
+                  lat: e.lngLat.lat.toString(),
+                  lng: e.lngLat.lng.toString(),
+                });
+              }
+            }, 300);
+          });
+
+          mapRef.current.on("dblclick", (e: mapboxgl.MapMouseEvent) => {
+            console.log("qqq double click detected at:", e.lngLat);
+            e.preventDefault();
+            if (clickTimeoutRef.current) {
+              clearTimeout(clickTimeoutRef.current);
+              clickTimeoutRef.current = null;
+            }
+            if (onMapDoubleClick) {
+              console.log("Double click executed");
+              onMapDoubleClick({
+                lat: e.lngLat.lat.toString(),
+                lng: e.lngLat.lng.toString(),
+              });
+            }
+          });
+
+          const handleBoundsChange = () => {
+            if (onBoundChange && mapRef.current) {
+              const bounds = mapRef.current.getBounds();
+              if (!bounds) return;
+              onBoundChange({
+                east: bounds.getEast(),
+                south: bounds.getSouth(),
+                west: bounds.getWest(),
+                north: bounds.getNorth(),
+              });
+            }
+          };
+
+          mapRef.current.on("moveend", handleBoundsChange);
+          mapRef.current.on("zoomend", handleBoundsChange);
         }
 
         mapRef.current?.flyTo({
@@ -376,18 +385,20 @@ const Map = (props: MapProps) => {
     }
 
     return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, []);
+  }, []); // Empty dependency array
 
   return (
     <div
       id="map-container"
       className="uk-position-absolute uk-width-1-1 uk-height-1-1"
-      style={{}}
     >
       {!isMapLoaded && !mapError && (
         <div

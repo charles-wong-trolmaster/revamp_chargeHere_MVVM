@@ -4,7 +4,6 @@ import SideNavbarContainier from "./containers/SideNavBarContainer";
 import NavbarContainer from "./containers/NavBarContainer";
 import MapContainer from "./containers/MapContainer";
 import DrawersContainer from "./containers/DrawersContainer";
-import Panel from "./components/Panel";
 
 const App: React.FC = () => {
   return (

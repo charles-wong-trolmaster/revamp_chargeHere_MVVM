@@ -31,32 +31,15 @@ const MapContainer: React.FC = () => {
   };
 
   const onMapClick = (coordinate: { lat: number; lng: number }) => {
-    console.log(coordinate);
-  };
-
-  const handleMapSelect = (data: any) => {
-    // console.log("Map selection:", data);
-
-    switch (data.type) {
-      case "cluster":
-        console.log("qqq Cluster clicked:", data.locations);
-        break;
-
-      case "single":
-        console.log("qqq Single location clicked:", data.location);
-        dispatch(setSelectedIndex(data.index));
-
-        break;
-
-      case "bounds":
-        console.log("Area search bounds:", data.bounds);
-        break;
-    }
+    console.log("qqq map click", coordinate);
   };
 
   const onBoundChange = (bound: Bound) => {
+    console.log("qqq bound", bound);
+
     dispatch(setBound(bound));
   };
+
   return (
     <Map
       onUnclusterClick={onUnclusterClick}
@@ -64,7 +47,6 @@ const MapContainer: React.FC = () => {
       onMapClick={onMapClick}
       items={items}
       selectedIndex={selectedIndex}
-      bound={bound}
       selectedStyle={selectedStyle}
       onBoundChange={onBoundChange}
     />
