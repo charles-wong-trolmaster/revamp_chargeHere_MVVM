@@ -15,7 +15,7 @@ interface MapProps extends MapState {
   onClusterClick?: (coordinate: { lat: string; lng: string }) => void;
   onBoundChange?: (bounds: Bound) => void;
   onMapClick?: (coordinate: { lat: string; lng: string }) => void;
-  onMapDoubleClick?: (coordinate: { lat: string; lng: string }) => void;
+  onMapDoubleClick?: () => void;
 }
 
 const Map = (props: MapProps) => {
@@ -332,7 +332,6 @@ const Map = (props: MapProps) => {
           });
 
           mapRef.current.on("dblclick", (e: mapboxgl.MapMouseEvent) => {
-            console.log("qqq double click detected at:", e.lngLat);
             e.preventDefault();
             if (clickTimeoutRef.current) {
               clearTimeout(clickTimeoutRef.current);
@@ -340,10 +339,7 @@ const Map = (props: MapProps) => {
             }
             if (onMapDoubleClick) {
               console.log("Double click executed");
-              onMapDoubleClick({
-                lat: e.lngLat.lat.toString(),
-                lng: e.lngLat.lng.toString(),
-              });
+              onMapDoubleClick();
             }
           });
 
