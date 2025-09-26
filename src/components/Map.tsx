@@ -7,7 +7,7 @@ import { useRef, useEffect, useState } from "react";
 interface MapProps extends MapState {
   items: any[];
   selectedId?: string;
-  selectedStyle?: string;
+  selectedStyle: string;
   onUnclusterClick?: (uncluster: {
     id: string;
     coordinate: { lat: number; lng: number };
@@ -29,6 +29,10 @@ const Map = (props: MapProps) => {
     onMapClick,
     onMapDoubleClick,
   } = props;
+  console.log("qqq items", items);
+
+  const [dummyId, setDummyId] = useState("");
+  console.log("qqq dummyId", dummyId);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -251,39 +255,44 @@ const Map = (props: MapProps) => {
     }
   };
 
-  useEffect(() => {
-    if (selectedId !== undefined && items.length > 0 && mapRef.current) {
-      const selectedUncluster = items.find((item) => {
-        return item.id === selectedId;
-      });
+  // useEffect(() => {
+  //   if (dummyId !== undefined && items.length > 0 && mapRef.current) {
+  //     console.log("qqq run 1?");
 
-      if (selectedUncluster && selectedUncluster.coordinates) {
-        const coordinates = [
-          parseFloat(selectedUncluster.coordinates.longitude),
-          parseFloat(selectedUncluster.coordinates.latitude),
-        ];
+  //     const selectedUncluster = items.find((item) => {
+  //       return item.id === dummyId;
+  //     });
+  //     console.log("qqq selectedUncluster", selectedUncluster);
 
-        mapRef.current.flyTo({
-          center: coordinates as [number, number],
-          zoom: 16,
-          pitch: 60,
-          duration: 1500,
-          essential: true,
-          easing: (t: number) => 1 - Math.pow(1 - t, 3),
-        });
-      } else {
-        mapRef.current?.flyTo({
-          center: defaultView.center,
-          zoom: defaultView.zoom,
-          pitch: defaultView.pitch,
-          bearing: defaultView.bearing,
-          duration: 3000,
-          essential: true,
-          easing: (t: number) => 1 - Math.pow(1 - t, 3),
-        });
-      }
-    }
-  }, [selectedId, items]);
+  //     if (selectedUncluster && selectedUncluster.coordinates) {
+  //       const coordinates = [
+  //         parseFloat(selectedUncluster.coordinates.longitude),
+  //         parseFloat(selectedUncluster.coordinates.latitude),
+  //       ];
+
+  //       mapRef.current.flyTo({
+  //         center: coordinates as [number, number],
+  //         zoom: 16,
+  //         pitch: 60,
+  //         duration: 1500,
+  //         essential: true,
+  //         easing: (t: number) => 1 - Math.pow(1 - t, 3),
+  //       });
+  //     } else {
+  //       mapRef.current?.flyTo({
+  //         center: defaultView.center,
+  //         zoom: defaultView.zoom,
+  //         pitch: defaultView.pitch,
+  //         bearing: defaultView.bearing,
+  //         duration: 3000,
+  //         essential: true,
+  //         easing: (t: number) => 1 - Math.pow(1 - t, 3),
+  //       });
+  //     }
+  //   } else {
+  //     console.log("qqq run 2?");
+  //   }
+  // }, [dummyId, items]);
 
   useEffect(() => {
     if (mapRef.current && currentStyle) {
@@ -514,6 +523,12 @@ const Map = (props: MapProps) => {
           height: "100%",
         }}
       />
+      <button
+        onClick={() => setDummyId("d7a75e3f-bcb2-463b-8116-b94a6232af0a")}
+      >
+        setId
+      </button>
+      <button onClick={() => setDummyId("")}>cancelId</button>
     </div>
   );
 };
