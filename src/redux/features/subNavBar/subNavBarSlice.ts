@@ -19,7 +19,6 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
     name: "Active",
     icon: "/icons/home.svg",
     mapboxStyle: "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h",
-    onClick: () => console.log("Active clicked"),
     showTooltip: false,
     tooltipText: "Active",
   },
@@ -27,17 +26,15 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
     name: "Removed",
     icon: "/icons/search.svg",
     mapboxStyle: "mapbox://styles/mapbox/satellite-v9",
-    onClick: () => console.log("Removed clicked"),
     showTooltip: false,
-    tooltipText: "Upcoming",
+    tooltipText: "Removed",
   },
   {
     name: "Upcoming",
     icon: "/icons/settings.svg",
     mapboxStyle: "mapbox://styles/mapbox/dark-v11",
-    onClick: () => console.log("Upcoming clicked"),
     showTooltip: false,
-    tooltipText: "Removed",
+    tooltipText: "Upcoming",
   },
 ];
 

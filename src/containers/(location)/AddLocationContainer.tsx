@@ -3,7 +3,7 @@ import { Location } from "@/interfaces/index";
 import { useCreateOneLocationMutation } from "@/redux/rtk-query/endpoints/admin/locations";
 import { useDrawerActions } from "@/hooks/useDrawerActions";
 
-const AddLocationDrawerContainer = () => {
+const AddLocationContainer = () => {
   const { closeCurrentDrawer } = useDrawerActions();
   const [createLocation] = useCreateOneLocationMutation();
   const onSubmit = async (location: Location) => {
@@ -17,4 +17,4 @@ const AddLocationDrawerContainer = () => {
   return <>Add and Edit Location component</>;
 };
 
-export default AddLocationDrawerContainer;
+export default AddLocationContainer;

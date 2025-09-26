@@ -1,14 +1,14 @@
 import React from "react";
 import { useDrawerActions } from "@/hooks/useDrawerActions";
 import type { DrawerLevel } from "@/hooks/useDrawerActions";
-import LocationDetailDrawerContainer from "./LocationDetailDrawerContainer";
+import LocationDetailDrawerContainer from "./LocationDetailContainer";
 import LocationDrawer from "@/components/LocationDrawer";
 import { Location } from "@/interfaces/index";
 import useLocationItems from "@/hooks/useLocationItems";
 import { useAppDispatch } from "@/redux/store";
 import { setSelectedLocationId } from "@/redux/features/location/locationSlice";
 
-const LocationDrawerContainer = () => {
+const LocationResultContainer = () => {
   const dispatch = useAppDispatch();
   const { openSubDrawer, closeCurrentDrawer } = useDrawerActions();
   const {
@@ -49,4 +49,4 @@ const LocationDrawerContainer = () => {
   );
 };
 
-export default LocationDrawerContainer;
+export default LocationResultContainer;

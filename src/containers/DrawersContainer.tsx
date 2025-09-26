@@ -7,7 +7,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { useAppSelector } from "@/redux/store";
-import LocationDrawerContainer from "./(location)/LocationDrawerContainer";
+import LocationDrawerContainer from "./(location)/LocationResultContainer";
 import SessionDrawerContainer from "./(session)/SessionDrawerContainer";
 import "./MultiLevelDrawer.css";
 

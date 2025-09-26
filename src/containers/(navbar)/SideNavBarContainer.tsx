@@ -26,6 +26,7 @@ const SideNavbarContainier: React.FC = () => {
     index: number
   ) => {
     dispatch(setSelectedIndex(index));
+    console.log(selectedItem);
     if (selectedItem.mapboxStyle) {
       dispatch(setSelectedStyle(selectedItem.mapboxStyle));
     }

@@ -1,4 +1,4 @@
-import { ITariff } from "@/entities";
+import { ITariff } from "@/interfaces/index";
 import { csmsClient } from "../../csms-client";
 
 const locationApi = csmsClient.injectEndpoints({

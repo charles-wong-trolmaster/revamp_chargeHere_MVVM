@@ -6,7 +6,7 @@ import { useAppSelector } from "@/redux/store";
 import { useGetOneLocationQuery } from "@/redux/rtk-query/endpoints/admin/locations";
 import { skipToken } from "@reduxjs/toolkit/query";
 
-const LocationDetailDrawerContainer = () => {
+const LocationDetailContainer = () => {
   const { openSubDrawer, closeCurrentDrawer, closeCurrentSubDrawer } =
     useDrawerActions();
   const selectedLocationId = useAppSelector(
@@ -39,6 +39,10 @@ const LocationDetailDrawerContainer = () => {
   };
 
   const onItemClick = () => {
+    console.log("selectedLocationId");
+    console.log(selectedLocationId);
+    console.log("location detail");
+    console.log(locationDetail);
     openSubDrawer(locationSubDetailDrawer);
   };
 
@@ -60,11 +64,10 @@ const LocationDetailDrawerContainer = () => {
   return (
     <LocationDetailDrawer
       title="Location Detail"
-      locationDetail={locationDetail}
       onClose={closeCurrentDrawer}
       onItemClick={onItemClick}
     />
   );
 };
 
-export default LocationDetailDrawerContainer;
+export default LocationDetailContainer;
