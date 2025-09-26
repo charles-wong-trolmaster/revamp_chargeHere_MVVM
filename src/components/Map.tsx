@@ -10,11 +10,11 @@ interface MapProps extends MapState {
   style?: string;
   onUnclusterClick?: (uncluster: {
     id: string;
-    coordinate: { lat: string; lng: string };
+    coordinate: { lat: number; lng: number };
   }) => void;
-  onClusterClick?: (coordinate: { lat: string; lng: string }) => void;
+  onClusterClick?: (coordinate: { lat: number; lng: number }) => void;
   onBoundChange?: (bounds: Bound) => void;
-  onMapClick?: (coordinate: { lat: string; lng: string }) => void;
+  onMapClick?: (coordinate: { lat: number; lng: number }) => void;
   onMapDoubleClick?: () => void;
 }
 
@@ -170,8 +170,8 @@ const Map = (props: MapProps) => {
         if (onClusterClick) {
           const coords = (features[0].geometry as any).coordinates;
           onClusterClick({
-            lat: coords[1].toString(),
-            lng: coords[0].toString(),
+            lat: coords[1],
+            lng: coords[0],
           });
         }
 
@@ -198,8 +198,8 @@ const Map = (props: MapProps) => {
           onUnclusterClick({
             id: properties?.id || "",
             coordinate: {
-              lat: coordinates[1].toString(),
-              lng: coordinates[0].toString(),
+              lat: coordinates[1],
+              lng: coordinates[0],
             },
           });
         }
@@ -324,8 +324,8 @@ const Map = (props: MapProps) => {
               if (onMapClick) {
                 console.log("Single click executed");
                 onMapClick({
-                  lat: e.lngLat.lat.toString(),
-                  lng: e.lngLat.lng.toString(),
+                  lat: e.lngLat.lat,
+                  lng: e.lngLat.lng,
                 });
               }
             }, 300);
