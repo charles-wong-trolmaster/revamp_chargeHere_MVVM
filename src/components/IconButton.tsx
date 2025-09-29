@@ -12,12 +12,9 @@ export interface IconButtonProps {
   showName?: boolean;
   style?: string;
   // SubButton props
+  subIconButton?: React.ReactNode;
   showSubButton?: boolean;
-  subButtonIcon?: string;
-  subButtonText?: string;
   subButtonPosition?: "top" | "bottom" | "left" | "right";
-  onSubButtonClick?: () => void;
-  subButtonTooltip?: string;
 }
 
 const IconButton = (props: IconButtonProps) => {
@@ -31,16 +28,12 @@ const IconButton = (props: IconButtonProps) => {
     tooltipText,
     onHover,
     onUnHover,
+    subIconButton,
     showSubButton = false,
-    subButtonIcon,
-    subButtonText = "Add location",
     subButtonPosition = "top",
-    onSubButtonClick,
-    subButtonTooltip,
   } = props;
 
   const [isHovered, setIsHovered] = useState(false);
-  const [isSubButtonHovered, setIsSubButtonHovered] = useState(false);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -56,15 +49,8 @@ const IconButton = (props: IconButtonProps) => {
     }
   };
 
-  const handleSubButtonClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onSubButtonClick) {
-      onSubButtonClick();
-    }
-  };
-
   const getSubButtonPositionStyles = () => {
-    const offset = "8px"; // Distance from main button
+    const offset = "8px";
 
     switch (subButtonPosition) {
       case "top":
@@ -96,93 +82,6 @@ const IconButton = (props: IconButtonProps) => {
           bottom: `calc(100% + ${offset})`,
           left: "50%",
           transform: "translateX(-50%)",
-        };
-    }
-  };
-
-  const getSubButtonTooltipStyles = () => {
-    const offset = "10px";
-
-    switch (subButtonPosition) {
-      case "top":
-        return {
-          bottom: `calc(100% + ${offset})`,
-          left: "50%",
-          transform: "translateX(-50%)",
-        };
-      case "bottom":
-        return {
-          top: `calc(100% + ${offset})`,
-          left: "50%",
-          transform: "translateX(-50%)",
-        };
-      case "left":
-        return {
-          right: `calc(100% + ${offset})`,
-          top: "50%",
-          transform: "translateY(-50%)",
-        };
-      case "right":
-        return {
-          left: `calc(100% + ${offset})`,
-          top: "50%",
-          transform: "translateY(-50%)",
-        };
-      default:
-        return {
-          bottom: `calc(100% + ${offset})`,
-          left: "50%",
-          transform: "translateX(-50%)",
-        };
-    }
-  };
-
-  const getSubButtonTooltipArrowStyles = () => {
-    switch (subButtonPosition) {
-      case "top":
-        return {
-          top: "100%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          borderTop: "5px solid #222",
-          borderLeft: "5px solid transparent",
-          borderRight: "5px solid transparent",
-        };
-      case "bottom":
-        return {
-          bottom: "100%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          borderBottom: "5px solid #222",
-          borderLeft: "5px solid transparent",
-          borderRight: "5px solid transparent",
-        };
-      case "left":
-        return {
-          top: "50%",
-          left: "100%",
-          transform: "translateY(-50%)",
-          borderLeft: "5px solid #222",
-          borderTop: "5px solid transparent",
-          borderBottom: "5px solid transparent",
-        };
-      case "right":
-        return {
-          top: "50%",
-          right: "100%",
-          transform: "translateY(-50%)",
-          borderRight: "5px solid #222",
-          borderTop: "5px solid transparent",
-          borderBottom: "5px solid transparent",
-        };
-      default:
-        return {
-          top: "100%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          borderTop: "5px solid #222",
-          borderLeft: "5px solid transparent",
-          borderRight: "5px solid transparent",
         };
     }
   };
@@ -212,13 +111,12 @@ const IconButton = (props: IconButtonProps) => {
         )}
       </button>
 
-      {/* SubButton */}
       {showSubButton && (
-        <button
-          className="uk-position-absolute uk-button uk-button-primary uk-flex uk-flex-middle uk-flex-center uk-padding-small"
-          onClick={handleSubButtonClick}
-          onMouseEnter={() => setIsSubButtonHovered(true)}
-          onMouseLeave={() => setIsSubButtonHovered(false)}
+        <div
+          className="uk-position-absolute uk-flex uk-flex-middle uk-flex-center uk-padding-small"
+          // onClick={handleSubButtonClick}
+          // onMouseEnter={() => setIsSubButtonHovered(true)}
+          // onMouseLeave={() => setIsSubButtonHovered(false)}
           style={{
             fontSize: "11px",
             borderRadius: "6px",
@@ -229,47 +127,12 @@ const IconButton = (props: IconButtonProps) => {
             ...getSubButtonPositionStyles(),
           }}
         >
-          {subButtonIcon && (
-            <img
-              src={subButtonIcon}
-              width="12"
-              height="12"
-              alt="sub button"
-              className="uk-margin-small-right"
-            />
-          )}
-          {subButtonText && (
-            <span className="uk-text-small">{subButtonText}</span>
-          )}
-        </button>
-      )}
-
-      {/* SubButton Tooltip */}
-      {isSubButtonHovered && subButtonTooltip && (
-        <div
-          className="uk-position-absolute uk-background-dark uk-text-white uk-padding-small uk-border-rounded uk-text-small"
-          style={{
-            whiteSpace: "nowrap",
-            zIndex: 1001,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-            backgroundColor: "black",
-            ...getSubButtonTooltipStyles(),
-          }}
-        >
-          {subButtonTooltip}
-          <div
-            className="uk-position-absolute"
-            style={{
-              width: 0,
-              height: 0,
-              ...getSubButtonTooltipArrowStyles(),
-            }}
-          />
+          {subIconButton}
         </div>
       )}
 
       {/* Main Tooltip */}
-      {showTooltip && tooltipText && isHovered && !isSubButtonHovered && (
+      {showTooltip && tooltipText && isHovered && (
         <div
           className="uk-position-absolute uk-background-dark uk-text-white uk-padding-small uk-border-rounded uk-text-small"
           style={{
