@@ -10,11 +10,20 @@ interface NavbarProps extends NavBarState {
   ) => void;
   onHover?: (hoveredItem: IconButtonProps, index: number) => void;
   onUnHover?: (unHoveredItem: IconButtonProps, index: number) => void;
+  onSubButtonClick?: (item: IconButtonProps, index: number) => void;
 }
 
 const NavBar = (props: NavbarProps) => {
-  const { direction, items, selectedIndex, onSelect, onHover, onUnHover } =
-    props;
+  const {
+    direction,
+    items,
+    selectedIndex,
+    onSelect,
+    onHover,
+    onUnHover,
+    onSubButtonClick,
+  } = props;
+
   return (
     <div className="uk-flex uk-background-muted uk-padding-small">
       <ul
@@ -35,6 +44,15 @@ const NavBar = (props: NavbarProps) => {
                 onClick={() => onSelect && onSelect(item, index)}
                 onHover={() => onHover && onHover(item, index)}
                 onUnHover={() => onUnHover && onUnHover(item, index)}
+                // Sub button props
+                subButtonText={item.subButtonText}
+                showSubButton={item.showSubButton}
+                subButtonIcon={item.subButtonIcon}
+                subButtonPosition={item.subButtonPosition}
+                subButtonTooltip={item.subButtonTooltip}
+                onSubButtonClick={() =>
+                  onSubButtonClick && onSubButtonClick(item, index)
+                }
               />
             </li>
           )

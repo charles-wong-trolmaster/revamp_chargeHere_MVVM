@@ -21,11 +21,9 @@ const MapContainer: React.FC = () => {
       dispatch(setSelectedLocationId(uncluster.id));
     }
   };
-
   const onClusterClick = (coordinate: { lat: number; lng: number }) => {
     console.log(coordinate);
   };
-
   const onMapClick = (coordinate: { lat: number; lng: number }) => {
     console.log("qqq map click", coordinate);
   };

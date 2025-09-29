@@ -16,6 +16,7 @@ interface MapProps extends MapState {
   onBoundChange?: (bounds: Bound) => void;
   onMapClick?: (coordinate: { lat: number; lng: number }) => void;
   onMapDoubleClick?: () => void;
+  boundFetchingTime: number;
 }
 
 const Map = (props: MapProps) => {
@@ -28,12 +29,12 @@ const Map = (props: MapProps) => {
     onBoundChange,
     onMapClick,
     onMapDoubleClick,
+    boundFetchingTime = 3000,
   } = props;
-  console.log("qqq items", items);
 
-  const [dummyId, setDummyId] = useState("");
-  console.log("qqq dummyId", dummyId);
-
+  // const [dummyId, setDummyId] = useState("");
+  const [lastProgrammaticId, setLastProgrammaticId] = useState(""); // Track the last ID we flew to
+  const isUserInteracting = useRef(false); // Track if user is currently interacting
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -257,19 +258,20 @@ const Map = (props: MapProps) => {
 
   // useEffect(() => {
   //   if (dummyId !== undefined && items.length > 0 && mapRef.current) {
-  //     console.log("qqq run 1?");
-
   //     const selectedUncluster = items.find((item) => {
   //       return item.id === dummyId;
   //     });
-  //     console.log("qqq selectedUncluster", selectedUncluster);
 
   //     if (selectedUncluster && selectedUncluster.coordinates) {
   //       const coordinates = [
   //         parseFloat(selectedUncluster.coordinates.longitude),
   //         parseFloat(selectedUncluster.coordinates.latitude),
   //       ];
-
+  //       // Clear any existing bounds timeout before programmatic movement
+  //       if (boundsTimeoutRef.current) {
+  //         clearTimeout(boundsTimeoutRef.current);
+  //         boundsTimeoutRef.current = null;
+  //       }
   //       mapRef.current.flyTo({
   //         center: coordinates as [number, number],
   //         zoom: 16,
@@ -278,21 +280,65 @@ const Map = (props: MapProps) => {
   //         essential: true,
   //         easing: (t: number) => 1 - Math.pow(1 - t, 3),
   //       });
-  //     } else {
-  //       mapRef.current?.flyTo({
-  //         center: defaultView.center,
-  //         zoom: defaultView.zoom,
-  //         pitch: defaultView.pitch,
-  //         bearing: defaultView.bearing,
-  //         duration: 3000,
-  //         essential: true,
-  //         easing: (t: number) => 1 - Math.pow(1 - t, 3),
-  //       });
+  //       // if (boundsTimeoutRef.current) {
+  //       //   clearTimeout(boundsTimeoutRef.current);
+  //       // }
   //     }
-  //   } else {
-  //     console.log("qqq run 2?");
+  //     // else {
+  //     //   mapRef.current?.flyTo({
+  //     //     center: defaultView.center,
+  //     //     zoom: defaultView.zoom,
+  //     //     pitch: defaultView.pitch,
+  //     //     bearing: defaultView.bearing,
+  //     //     duration: 3000,
+  //     //     essential: true,
+  //     //     easing: (t: number) => 1 - Math.pow(1 - t, 3),
+  //     //   });
+  //     // }
   //   }
+  //   // else {
+  //   //   console.log("qqq run 2?");
+  //   // }
   // }, [dummyId, items]);
+
+  useEffect(() => {
+    if (
+      selectedId &&
+      selectedId !== lastProgrammaticId &&
+      items.length > 0 &&
+      mapRef.current
+    ) {
+      const selectedUncluster = items.find((item) => item.id === selectedId);
+
+      if (selectedUncluster && selectedUncluster.coordinates) {
+        const coordinates = [
+          parseFloat(selectedUncluster.coordinates.longitude),
+          parseFloat(selectedUncluster.coordinates.latitude),
+        ];
+
+        // Clear any existing bounds timeout
+        if (boundsTimeoutRef.current) {
+          clearTimeout(boundsTimeoutRef.current);
+          boundsTimeoutRef.current = null;
+        }
+
+        // Mark that this is a programmatic move
+        isUserInteracting.current = false;
+
+        mapRef.current.flyTo({
+          center: coordinates as [number, number],
+          zoom: 16,
+          pitch: 60,
+          duration: 1500,
+          essential: true,
+          easing: (t: number) => 1 - Math.pow(1 - t, 3),
+        });
+
+        // Update the last programmatic ID to prevent re-flying on bounds change
+        setLastProgrammaticId(selectedId);
+      }
+    }
+  }, [selectedId, items, lastProgrammaticId]);
 
   useEffect(() => {
     if (mapRef.current && currentStyle) {
@@ -329,7 +375,6 @@ const Map = (props: MapProps) => {
     try {
       mapboxgl.accessToken =
         "pk.eyJ1Ijoia2VudHJvbG1hc3RlciIsImEiOiJjbWV3aHV0bnkwNHN3MmpxeXNoYjdjeWxzIn0.1qyqP80uVoKe7UOyjlMwyA";
-
       mapRef.current = new mapboxgl.Map({
         style: currentStyle,
         container: mapContainerRef.current,
@@ -355,10 +400,20 @@ const Map = (props: MapProps) => {
         if (items.length > 0) {
           addClusterLayers();
         }
-
+        // pass the initial bounds before the open animation
         if (mapRef.current) {
-          let isInitialLoad = true;
-
+          if (onBoundChange) {
+            const initialBounds = mapRef.current.getBounds();
+            if (initialBounds) {
+              // console.log("qqq sending initial bounds before animation");
+              onBoundChange({
+                east: initialBounds.getEast(),
+                south: initialBounds.getSouth(),
+                west: initialBounds.getWest(),
+                north: initialBounds.getNorth(),
+              });
+            }
+          }
           mapRef.current.on("click", (e: mapboxgl.MapMouseEvent) => {
             const map = mapRef.current!;
             const layersToCheck = ["clusters", "unclustered-point"];
@@ -398,11 +453,35 @@ const Map = (props: MapProps) => {
               onMapDoubleClick();
             }
           });
+          // const handleBoundsChange = () => {
+          //   if (boundsTimeoutRef.current) {
+          //     clearTimeout(boundsTimeoutRef.current);
+          //   }
+          //   const delay = isInitialLoad ? 0 : 3000;
+
+          //   boundsTimeoutRef.current = setTimeout(() => {
+          //     if (onBoundChange && mapRef.current) {
+          //       console.log("qqq run time out bound");
+
+          //       const bounds = mapRef.current.getBounds();
+          //       if (!bounds) return;
+
+          //       onBoundChange({
+          //         east: bounds.getEast(),
+          //         south: bounds.getSouth(),
+          //         west: bounds.getWest(),
+          //         north: bounds.getNorth(),
+          //       });
+          //       isInitialLoad = false;
+          //     }
+          //   }, delay);
+          // };
+
           const handleBoundsChange = () => {
             if (boundsTimeoutRef.current) {
               clearTimeout(boundsTimeoutRef.current);
             }
-            const delay = isInitialLoad ? 0 : 3000;
+            // const delay = isInitialLoad ? 0 : 3000;
 
             boundsTimeoutRef.current = setTimeout(() => {
               if (onBoundChange && mapRef.current) {
@@ -415,26 +494,51 @@ const Map = (props: MapProps) => {
                   west: bounds.getWest(),
                   north: bounds.getNorth(),
                 });
+
+                // If user interacted and we have a selected ID, clear the programmatic tracking
+                // This allows the same ID to trigger animation again if selected after user interaction
+                if (isUserInteracting.current && selectedId) {
+                  setLastProgrammaticId("");
+                }
+
                 isInitialLoad = false;
               }
-            }, delay);
+            }, boundFetchingTime);
           };
-
-          mapRef.current.on("movestart", () => {
-            console.log("Map movement started");
+          mapRef.current.on("dragstart", () => {
+            isUserInteracting.current = true;
           });
 
-          mapRef.current.on("move", () => {
-            handleBoundsChange();
+          mapRef.current.on("zoomstart", () => {
+            isUserInteracting.current = true;
           });
 
+          mapRef.current.on("rotatestart", () => {
+            isUserInteracting.current = true;
+          });
+
+          // Reset user interaction flag after movement ends
           mapRef.current.on("moveend", () => {
             handleBoundsChange();
+            // Keep isUserInteracting as true until bounds change completes
+            // This will be reset in handleBoundsChange timeout
           });
 
-          mapRef.current.on("zoomend", () => {
-            handleBoundsChange();
-          });
+          // mapRef.current.on("movestart", () => {
+          //   console.log("Map movement started");
+          // });
+
+          // mapRef.current.on("move", () => {
+          //   handleBoundsChange();
+          // });
+
+          // mapRef.current.on("moveend", () => {
+          //   handleBoundsChange();
+          // });
+
+          // mapRef.current.on("zoomend", () => {
+          //   handleBoundsChange();
+          // });
         }
 
         mapRef.current?.flyTo({
@@ -523,12 +627,12 @@ const Map = (props: MapProps) => {
           height: "100%",
         }}
       />
-      <button
+      {/* <button
         onClick={() => setDummyId("d7a75e3f-bcb2-463b-8116-b94a6232af0a")}
       >
         setId
       </button>
-      <button onClick={() => setDummyId("")}>cancelId</button>
+      <button onClick={() => setDummyId("")}>cancelId</button> */}
     </div>
   );
 };
