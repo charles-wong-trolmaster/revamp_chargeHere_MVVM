@@ -12,6 +12,9 @@ const MapContainer: React.FC = () => {
   const selectedNavBarItem = useAppSelector(getSelectedNavItem);
   const selectedIndex = useAppSelector((state) => state.map.selectedIndex);
   const selectedStyle = useAppSelector((state) => state.map.selectedStyle);
+  const boundOnChangeDelay = useAppSelector(
+    (state) => state.map.boundOnChangeDelay
+  );
 
   const onUnclusterClick = (uncluster: {
     id: string;
@@ -33,6 +36,8 @@ const MapContainer: React.FC = () => {
 
     dispatch(setBound(bound));
   };
+
+  const handleSelectedId = () => {};
 
   return (
     <Map

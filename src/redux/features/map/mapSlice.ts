@@ -194,6 +194,7 @@ export interface MapState {
   items: any[];
   selectedIndex?: number;
   selectedStyle: string;
+  boundOnChangeDelay?: number;
 }
 
 const initialState: MapState = {
@@ -201,6 +202,7 @@ const initialState: MapState = {
   items: initItems,
   selectedIndex: undefined,
   selectedStyle: "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h", // Initialize as undefined or set a default style
+  boundOnChangeDelay: undefined,
 };
 
 export const mapSlice = createSlice({
@@ -219,11 +221,19 @@ export const mapSlice = createSlice({
     setSelectedStyle: (state, action: PayloadAction<string>) => {
       state.selectedStyle = action.payload;
     },
+    setBoundOnChangeDelay: (state, action: PayloadAction<number>) => {
+      state.boundOnChangeDelay = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setBound, setitems, setSelectedIndex, setSelectedStyle } =
-  mapSlice.actions;
+export const {
+  setBound,
+  setitems,
+  setSelectedIndex,
+  setSelectedStyle,
+  setBoundOnChangeDelay,
+} = mapSlice.actions;
 
 export default mapSlice.reducer;

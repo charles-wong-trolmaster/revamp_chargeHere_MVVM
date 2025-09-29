@@ -4,6 +4,7 @@ import mapReducer from "./features/map/mapSlice";
 import searchBarReducer from "./features/searchBar/searchBarSlice";
 import subNavBarReducer from "./features/subNavBar/subNavBarSlice";
 import locationReducer from "./features/location/locationSlice";
+import tariffReducer from "./features/tariff/tariffSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { csmsClient } from "./rtk-query/csms-client";
 
@@ -15,6 +16,7 @@ export const store = configureStore({
     searchBar: searchBarReducer,
     subNavBar: subNavBarReducer,
     location: locationReducer,
+    tariff: tariffReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(csmsClient.middleware),
