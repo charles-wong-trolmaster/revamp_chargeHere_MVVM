@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 export interface IconButtonProps {
+  id?: string;
   isSelected?: boolean;
   showTooltip?: boolean;
   tooltipText?: string;

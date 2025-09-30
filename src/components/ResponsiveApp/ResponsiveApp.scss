@@ -1,0 +1,110 @@
+/* SCSS Configuration Variables */
+$min-viewport-width: 1024px;
+$min-viewport-height: 768px;
+$top-section-ratio: 0.05;
+$middle-section-ratio: 0.8; /* Back to original */
+$bottom-section-ratio: 0.05;
+$side-section-ratio: 0.05; /* This should be relative to viewport HEIGHT, not width */
+
+$main-padding-ratio: 0.02;
+$main-background-color: #f0f0f0;
+
+$font-family: Arial, sans-serif;
+$top-font-size-ratio: 0.02;
+$side-font-size-ratio: 0.015;
+$bottom-font-size-ratio: 0.015;
+
+$primary-bg-color: #333;
+$primary-text-color: white;
+
+// Helper functions for calculations
+@function viewport-width() {
+  @return max(100vw, #{$min-viewport-width});
+}
+
+@function viewport-height() {
+  @return max(100vh, #{$min-viewport-height});
+}
+
+@function side-width() {
+  @return calc(
+    #{viewport-height()} * #{$side-section-ratio}
+  ); /* Fixed: Now proportional to vh */
+}
+
+@function available-height() {
+  @return calc(
+    #{viewport-height()} * #{$middle-section-ratio} - 2 * #{viewport-height()} *
+      #{$main-padding-ratio}
+  );
+}
+
+@function available-width() {
+  @return calc(
+    #{viewport-width()} - #{side-width()} - 2 * #{viewport-height()} * #{$main-padding-ratio}
+  );
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.responsive-app {
+  font-family: $font-family;
+  display: flex;
+  flex-direction: column;
+  width: viewport-width();
+  height: viewport-height();
+  overflow: hidden;
+}
+
+.top {
+  background-color: $primary-bg-color;
+  color: $primary-text-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(#{viewport-height()} * #{$top-section-ratio});
+  font-size: calc(#{viewport-height()} * #{$top-font-size-ratio});
+  z-index: 10;
+}
+
+.middle {
+  display: grid;
+  grid-template-columns: 1fr #{side-width()};
+  height: calc(#{viewport-height()} * #{$middle-section-ratio});
+}
+
+.main {
+  background-color: $main-background-color;
+  display: grid;
+  justify-items: start;
+  align-items: center;
+  overflow: hidden;
+  padding: calc(#{viewport-height()} * #{$main-padding-ratio});
+}
+
+.side {
+  background-color: #666;
+  color: $primary-text-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  width: side-width();
+  font-size: calc(#{viewport-height()} * #{$side-font-size-ratio});
+}
+
+.bottom {
+  background-color: $primary-bg-color;
+  color: $primary-text-color;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Changed to space-between */
+  padding: 0 calc(#{viewport-height()} * 0.02); /* Added padding */
+  height: calc(#{viewport-height()} * #{$bottom-section-ratio});
+  font-size: calc(#{viewport-height()} * #{$bottom-font-size-ratio});
+}

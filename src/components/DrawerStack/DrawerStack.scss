@@ -1,0 +1,144 @@
+// ===== DEFAULT VARIABLES (can be overridden in App.scss) =====
+
+/* Drawer Stack Layout Configuration */
+$drawer-stack-aspect-ratio: 1.25 !default; /* 1 = square, 1.5 = wider, 0.75 = taller */
+$drawer-stack-background-color: #ddd !default;
+$drawer-stack-border-width: 2px !default;
+$drawer-stack-border-color: #999 !default;
+
+/* Drawer Size and Spacing Configuration */
+$drawer-width-ratio: 0.30 !default; /* Each drawer width = 30% of drawer stack height */
+$drawer-gap-ratio: 0.01 !default; /* Gap between drawers relative to drawer stack height */
+$drawer-background-color: white !default;
+$drawer-border-width: 1px !default;
+$drawer-border-color: #ccc !default;
+
+/* Drawer Spacing Configuration */
+$drawer-padding-ratio: 0.04 !default;
+
+/* Font Configuration for em units */
+$drawer-base-font-size: 14px !default; /* Base font size - everything else uses em units */
+
+/* Animation Timing Configuration */
+$drawer-transition-duration: 200ms !default;
+$drawer-stagger-delay: 100ms !default;
+
+// ===== MIXINS FOR CUSTOMIZATION =====
+
+@mixin hook-drawer-stack() {
+  // Default empty - override in App.scss
+}
+
+@mixin hook-drawer() {
+  // Default empty - override in App.scss
+}
+
+@mixin hook-drawer-animation() {
+  // Default empty - override in App.scss
+}
+
+// ===== HELPER FUNCTIONS =====
+
+@function available-height() {
+  @return calc(max(100vh, 768px) * 0.90 - 2 * max(100vh, 768px) * 0.02);
+}
+
+@function available-width() {
+  @return calc(max(100vw, 1024px) - calc(max(100vh, 768px) * 0.05) - 2 * max(100vh, 768px) * 0.02);
+}
+
+@function drawer-stack-width() {
+  @return min(
+    calc(#{available-height()} * #{$drawer-stack-aspect-ratio}),
+    #{available-width()}
+  );
+}
+
+@function drawer-stack-height() {
+  @return min(
+    #{available-height()},
+    calc(#{available-width()} / #{$drawer-stack-aspect-ratio})
+  );
+}
+
+@function drawer-width() {
+  @return calc(#{drawer-stack-height()} * #{$drawer-width-ratio});
+}
+
+@function drawer-gap() {
+  @return calc(#{drawer-stack-height()} * #{$drawer-gap-ratio});
+}
+
+@function drawer-width-with-multiplier() {
+  @return calc(#{drawer-width()} * var(--drawer-width-multiplier, 1));
+}
+
+
+
+// ===== COMPONENT STYLES =====
+
+.drawer-stack {
+  background-color: $drawer-stack-background-color;
+  border: #{$drawer-stack-border-width} solid #{$drawer-stack-border-color};
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: drawer-stack-width();
+  height: drawer-stack-height();
+  gap: drawer-gap();
+  overflow: hidden;
+  
+  @include hook-drawer-stack();
+}
+
+.drawer {
+  /* Set base font size for em units */
+  font-size: $drawer-base-font-size;
+
+  height: 100%;
+  width: drawer-width-with-multiplier(); // Use the new function
+  flex-shrink: 0;
+  background-color: $drawer-background-color;
+  border: #{$drawer-border-width} solid #{$drawer-border-color};
+  overflow-y: auto;
+  display: none;
+  padding: calc(#{drawer-width-with-multiplier()} * #{$drawer-padding-ratio}); // Also update padding
+  
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: all $drawer-transition-duration ease-in-out;
+
+  @include hook-drawer();
+
+  &.visible {
+    display: block;
+    animation: slideInFromLeft $drawer-transition-duration ease-in-out forwards;
+    @include hook-drawer-animation();
+  }
+  
+  &.closing {
+    animation: slideOutToLeft $drawer-transition-duration ease-in-out forwards;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}

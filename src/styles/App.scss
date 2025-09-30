@@ -1,12 +1,319 @@
-// 1. Your custom variables and variable overwrites.
-$global-color: #da7d02;
+// 1. Import Sass modules FIRST
+@use "sass:color";
 
-// 2. Import default variables and available mixins.
+// 2. Your custom variables and variable overwrites.
+$global-color: #3777a8;
+
+// 3. DrawerStack variable customization (BEFORE importing DrawerStack)
+$drawer-stack-aspect-ratio: 1.5; // Make it wider
+$drawer-stack-background-color: #f8f9fa; // Light gray
+$drawer-stack-border-color: $global-color; // Use your brand color
+$drawer-stack-border-width: 3px; // Thicker border
+
+$drawer-width-ratio: 0.35; // Make drawers wider (35% instead of 30%)
+$drawer-gap-ratio: 0.015; // Bigger gap between drawers
+$drawer-background-color: #ffffff; // Pure white
+$drawer-border-color: color.adjust(
+  $global-color,
+  $lightness: 20%
+); // Lighter brand color
+
+// Content styling variables (moved from DrawerStack.scss)
+$button-primary-color: $global-color; // Use your brand color
+$button-primary-hover: color.adjust(
+  $global-color,
+  $lightness: -10%
+); // Darker on hover
+$button-danger-color: #dc3545;
+$button-danger-hover: #c82333;
+$drawer-close-size-ratio: 0.08; // Size of close button relative to drawer width
+
+$drawer-transition-duration: 400ms; // Slower animation
+$drawer-stagger-delay: 100ms; // Faster stagger
+
+// 4. Import UIKit basics
 @import "uikit/src/scss/variables-theme.scss";
 @import "uikit/src/scss/mixins-theme.scss";
 
-// 3. Your custom mixin overwrites.
-//@mixin hook-card() { color: #000; }
+// 5. Import DrawerStack (variables will use your overrides)
+@import "@/components/DrawerStack/DrawerStack.scss";
 
-// 4. Import UIkit.
+// 6. UIKit hook overwrites
+@mixin hook-card() {
+  color: #3e9d6f;
+}
+
+@mixin hook-card-body() {
+  // Empty for now
+}
+
+// 7. DrawerStack hook overwrites
+@mixin hook-drawer-stack() {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+@mixin hook-drawer() {
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@mixin hook-drawer-animation() {
+  animation-timing-function: cubic-bezier(
+    0.68,
+    -0.55,
+    0.265,
+    1.55
+  ); // Bouncy animation
+}
+
+// 8. Content styling (moved from DrawerStack.scss)
+.drawer {
+  // Typography using em units - scales with the drawer's font-size
+  h1 {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin: 0 0 0.8em 0;
+    line-height: 1.2;
+    color: $global-color;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  h2 {
+    font-size: 1.8em;
+    font-weight: 600;
+    margin: 0 0 0.6em 0;
+    line-height: 1.3;
+    color: color.adjust($global-color, $lightness: 10%);
+  }
+
+  h3 {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin: 0 0 0.5em 0;
+    line-height: 1.3;
+    color: $global-color;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  h4 {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin: 0 0 0.4em 0;
+    line-height: 1.4;
+    color: color.adjust($global-color, $lightness: 15%);
+  }
+
+  h5,
+  h6 {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin: 0 0 0.3em 0;
+    line-height: 1.4;
+    color: color.adjust($global-color, $lightness: 20%);
+  }
+
+  p,
+  .drawer-body {
+    font-size: 1em;
+    line-height: 1.5;
+    color: #444;
+    margin: 0 0 1em 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(248, 249, 250, 0.6) 100%
+    );
+    padding: 0.75em;
+    border-radius: 8px;
+    border-left: 3px solid $global-color;
+  }
+
+  ul,
+  ol {
+    font-size: 1em;
+    line-height: 1.5;
+    color: #666;
+    margin: 0 0 1em 0;
+    padding-left: 1.5em;
+
+    li {
+      margin-bottom: 0.3em;
+    }
+  }
+
+  small,
+  .small-text {
+    font-size: 0.85em;
+    color: #777;
+    line-height: 1.4;
+  }
+
+  .large-text {
+    font-size: 1.15em;
+    line-height: 1.4;
+  }
+
+  // Buttons using em units
+  button {
+    color: white;
+    border: none;
+    cursor: pointer;
+
+    font-size: 0.9em;
+    padding: 0.6em 1.2em;
+    border-radius: 0.25em;
+    margin: 0.4em 0.4em 0.4em 0;
+    min-height: 2.5em;
+
+    background: linear-gradient(
+      135deg,
+      $button-primary-color 0%,
+      color.adjust($button-primary-color, $lightness: -5%) 100%
+    );
+    box-shadow: 0 4px 16px rgba($button-primary-color, 0.3);
+    transform: translateY(0);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+
+    &:hover {
+      background: linear-gradient(
+        135deg,
+        $button-primary-hover 0%,
+        color.adjust($button-primary-hover, $lightness: -5%) 100%
+      );
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba($button-primary-color, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+      transition-duration: 0.1s;
+    }
+
+    // Button variants
+    &.btn-small {
+      font-size: 0.8em;
+      padding: 0.4em 0.8em;
+    }
+
+    &.btn-large {
+      font-size: 1.1em;
+      padding: 0.8em 1.6em;
+    }
+
+    &.close {
+      background: linear-gradient(
+        135deg,
+        $button-danger-color 0%,
+        color.adjust($button-danger-color, $lightness: -5%) 100%
+      );
+      position: absolute;
+      top: 0.5em;
+      right: 0.5em;
+      font-weight: bold;
+      font-size: 1.2em;
+      padding: 0.3em 0.6em;
+      border-radius: 50%;
+      min-height: auto;
+      width: calc(#{drawer-width()} * #{$drawer-close-size-ratio} * 1.2);
+      height: calc(#{drawer-width()} * #{$drawer-close-size-ratio} * 1.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background: linear-gradient(
+          135deg,
+          $button-danger-hover 0%,
+          color.adjust($button-danger-hover, $lightness: -5%) 100%
+        );
+        transform: translateY(-1px) rotate(90deg);
+        box-shadow: 0 6px 20px rgba($button-danger-color, 0.4);
+      }
+    }
+  }
+
+  // Form elements using em units
+  input,
+  textarea,
+  select {
+    font-size: 1em;
+    padding: 0.5em;
+    border: 1px solid #ddd;
+    border-radius: 0.25em;
+    margin: 0.25em 0;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $global-color;
+      box-shadow: 0 0 0 0.15em rgba($global-color, 0.2);
+    }
+  }
+
+  // Labels using em units
+  label {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #555;
+    display: block;
+    margin: 0.5em 0 0.2em 0;
+  }
+
+  // Utility classes for spacing
+  .mb-0 {
+    margin-bottom: 0;
+  }
+  .mb-1 {
+    margin-bottom: 0.5em;
+  }
+  .mb-2 {
+    margin-bottom: 1em;
+  }
+  .mb-3 {
+    margin-bottom: 1.5em;
+  }
+  .mb-4 {
+    margin-bottom: 2em;
+  }
+
+  .mt-0 {
+    margin-top: 0;
+  }
+  .mt-1 {
+    margin-top: 0.5em;
+  }
+  .mt-2 {
+    margin-top: 1em;
+  }
+  .mt-3 {
+    margin-top: 1.5em;
+  }
+  .mt-4 {
+    margin-top: 2em;
+  }
+
+  .p-1 {
+    padding: 0.5em;
+  }
+  .p-2 {
+    padding: 1em;
+  }
+  .p-3 {
+    padding: 1.5em;
+  }
+  .p-4 {
+    padding: 2em;
+  }
+}
+
+// 9. Import UIkit theme
 @import "uikit/src/scss/uikit-theme.scss";

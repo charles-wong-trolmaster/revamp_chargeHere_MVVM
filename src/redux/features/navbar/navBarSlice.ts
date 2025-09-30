@@ -12,22 +12,27 @@ export interface NavBarState {
 
 const intitalNavItems: IconButtonProps[] = [
   {
+    id: "location",
     name: "Location",
     icon: "/icons/home.svg",
   },
   {
+    id: "session",
     name: "Session",
     icon: "/icons/search.svg",
   },
   {
+    id: "station",
     name: "Station",
     icon: "/icons/settings.svg",
   },
   {
+    id: "tariff",
     name: "Tariff",
     icon: "/icons/profile.svg",
   },
   {
+    id: "settings",
     name: "Settings",
     icon: "/icons/gear.svg",
   },

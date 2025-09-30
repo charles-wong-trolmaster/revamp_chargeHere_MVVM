@@ -1,0 +1,8 @@
+// Use modern @use syntax instead of deprecated @import
+@use './DrawerStack.scss' as drawer;
+
+/* Export variables for JavaScript access */
+:export {
+  drawerTransitionDuration: drawer.$drawer-transition-duration;
+  drawerStaggerDelay: drawer.$drawer-stagger-delay;
+}

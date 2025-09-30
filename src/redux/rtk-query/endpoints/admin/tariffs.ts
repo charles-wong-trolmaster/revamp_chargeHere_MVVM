@@ -1,7 +1,12 @@
-import { ITariff } from "@/interfaces/index";
+import { ITariff } from "@/entities";
 import { csmsClient } from "../../csms-client";
 
-const locationApi = csmsClient.injectEndpoints({
+export interface TariffItem {
+  id: string;
+  name: string;
+}
+
+const tariffApi = csmsClient.injectEndpoints({
   endpoints: (builder) => ({
     getOneTariff: builder.query<ITariff, string>({
       query: (id) => `/admin/tariffs/${id}`,
@@ -99,4 +104,4 @@ export const {
   useDeleteOneTariffMutation,
   useListAllTariffsInfiniteQuery,
   useReplaceOneTariffMutation,
-} = locationApi;
+} = tariffApi;
