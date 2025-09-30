@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Drawer from "../DrawerStack/Drawer";
 import LocationContent from "./components/LocationContent";
 import LocationDetailDrawer from "./LocationDetailDrawer";
@@ -27,16 +27,24 @@ const LocationDrawer: React.FC<LocationDrawerProps> = ({
     hasNextPage,
   } = useLocationItems();
 
-  const onScrollToBottom = () => {
+  // Memoize the scroll handler
+  const onScrollToBottom = useCallback(() => {
     console.log("scrolled to bottom");
-  };
+  }, []);
 
+  // Memoize the item click handler
   const handleItemClick = (item: Location) => {
     if (item.id) {
       dispatch(setSelectedLocationId(item.id));
     }
     openDrawer("locationDetail");
   };
+
+  // Memoize the close handler
+  const handleClose = useCallback(() => {
+    console.log("closing");
+  }, []);
+
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
       <LocationContent
@@ -47,7 +55,7 @@ const LocationDrawer: React.FC<LocationDrawerProps> = ({
         handleScroll={onScrollToBottom}
         onScrollToBottom={onScrollToBottom}
         items={items}
-        onClose={() => closeDrawer(id)}
+        onClose={handleClose}
         onItemClick={handleItemClick}
       />
       <LocationDetailDrawer id="locationDetail" />
