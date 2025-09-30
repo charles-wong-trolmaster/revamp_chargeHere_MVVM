@@ -4,34 +4,38 @@ import {
 } from "@/redux/rtk-query/endpoints/admin/locations"; // Adjust import path as needed
 import { useAppSelector } from "@/redux/store";
 import { getSelectedNavItem } from "@/redux/features/navbar/navBarSlice";
-import { getSelectedSubNavItem } from "@/redux/features/subNavBar/subNavBarSlice";
 import { Location } from "@/interfaces";
 
 const useLocationItems = () => {
   // Get Redux state
   const navBarSelectedItem = useAppSelector(getSelectedNavItem);
-  const subNavbarSelectedItem = useAppSelector(getSelectedSubNavItem);
+  const locationSubNavbarSelectedItemIndex = useAppSelector(
+    (state) => state.subNavBar.selectedItemIndex?.["location"]
+  );
   const searchQuery = useAppSelector((state) => state.searchBar.value);
   const bounds = useAppSelector((state) => state.map.bound);
 
   // Determine which API to use based on conditions
   const shouldUseBoundsAPI =
-    navBarSelectedItem?.name === "Location" &&
-    subNavbarSelectedItem?.name === "Active" &&
+    navBarSelectedItem?.id === "location" &&
+    locationSubNavbarSelectedItemIndex === 0 &&
     searchQuery === "";
 
   const shouldUseStatusAPI =
-    navBarSelectedItem?.name === "Location" &&
-    (subNavbarSelectedItem?.name === "Removed" ||
-      subNavbarSelectedItem?.name === "Upcoming" ||
-      (subNavbarSelectedItem?.name === "Active" && searchQuery !== ""));
+    navBarSelectedItem?.id === "location" &&
+    (locationSubNavbarSelectedItemIndex === 1 ||
+      locationSubNavbarSelectedItemIndex === 2 ||
+      (locationSubNavbarSelectedItemIndex === 0 && searchQuery !== ""));
 
   // Determine status parameter for status API
   const getStatusParam = () => {
-    if (subNavbarSelectedItem?.name === "Active" && searchQuery !== "") {
+    if (locationSubNavbarSelectedItemIndex === 0 && searchQuery !== "") {
       return "ACTIVE";
+    } else if (locationSubNavbarSelectedItemIndex === 1) {
+      return "REMOVED";
+    } else if (locationSubNavbarSelectedItemIndex === 2) {
+      return "UPCOMING";
     }
-    return subNavbarSelectedItem?.name.toUpperCase();
   };
 
   // Use RTK Query hooks conditionally

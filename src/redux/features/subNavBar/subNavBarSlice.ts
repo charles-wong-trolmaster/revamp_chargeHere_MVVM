@@ -1,13 +1,14 @@
 import { IconButtonProps } from "@/components/IconButton";
-import { RootState } from "@/redux/store";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface SubNavBarState {
   direction: "horizontal" | "vertical";
   items: IconButtonProps[] | LocationSubNavBarIconButtonProps[];
-  selectedIndex?: number;
   hoveredIndex?: number;
+  selectedItemIndex?: {
+    [key: string]: number;
+  };
 }
 
 export interface LocationSubNavBarIconButtonProps extends IconButtonProps {
@@ -16,6 +17,7 @@ export interface LocationSubNavBarIconButtonProps extends IconButtonProps {
 
 const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
   {
+    id: "active",
     name: "Active",
     icon: "/icons/home.svg",
     mapboxStyle: "mapbox://styles/kentrolmaster/cmf0h2uq401ji01pg5yoh842h",
@@ -23,6 +25,7 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
     tooltipText: "Active",
   },
   {
+    id: "removed",
     name: "Removed",
     icon: "/icons/search.svg",
     mapboxStyle: "mapbox://styles/mapbox/satellite-v9",
@@ -30,6 +33,7 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
     tooltipText: "Removed",
   },
   {
+    id: "upcoming",
     name: "Upcoming",
     icon: "/icons/settings.svg",
     mapboxStyle: "mapbox://styles/mapbox/dark-v11",
@@ -38,11 +42,33 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
   },
 ];
 
+const sessionSubNavBarItems: IconButtonProps[] = [
+  {
+    id: "onGoinig",
+    name: "On Going",
+    icon: "/icons/search.svg",
+    showTooltip: false,
+    tooltipText: "On Going",
+    showName: false,
+  },
+  {
+    id: "CDR",
+    name: "CDR",
+    icon: "/icons/search.svg",
+    showTooltip: false,
+    tooltipText: "CDR",
+    showName: false,
+  },
+];
+
 const initialState: SubNavBarState = {
   items: [],
   direction: "vertical",
-  selectedIndex: 0,
   hoveredIndex: undefined,
+  selectedItemIndex: {
+    location: 0,
+    session: 0,
+  },
 };
 
 export const subNavBarSlice = createSlice({
@@ -60,39 +86,35 @@ export const subNavBarSlice = createSlice({
     ) => {
       state.items = action.payload;
     },
-    setSelectedIndex: (state, action: PayloadAction<number | undefined>) => {
-      state.selectedIndex = action.payload;
-    },
     setHoveredIndex: (state, action: PayloadAction<number | undefined>) => {
       state.hoveredIndex = action.payload;
     },
     setLocationSubNavBar: (state) => {
       state.items = locationSubNavBarItems;
     },
+    setSessionSubNavBar: (state) => {
+      state.items = sessionSubNavBarItems;
+    },
+    setSelectedItemIndex: (
+      state,
+      action: PayloadAction<{ [key: string]: number } | undefined>
+    ) => {
+      state.selectedItemIndex = {
+        ...state.selectedItemIndex,
+        ...action.payload,
+      };
+    },
   },
 });
-
-export const getSelectedSubNavItem = (
-  state: RootState
-): IconButtonProps | undefined => {
-  const { items, selectedIndex } = state.subNavBar;
-  return selectedIndex !== undefined ? items[selectedIndex] : undefined;
-};
-
-export const getHoveredSubNavItem = (
-  state: RootState
-): IconButtonProps | undefined => {
-  const { items, hoveredIndex } = state.subNavBar;
-  return hoveredIndex !== undefined ? items[hoveredIndex] : undefined;
-};
 
 // Action creators are generated for each case reducer function
 export const {
   setDirection,
   setItems,
-  setSelectedIndex,
   setHoveredIndex,
   setLocationSubNavBar,
+  setSessionSubNavBar,
+  setSelectedItemIndex,
 } = subNavBarSlice.actions;
 
 export default subNavBarSlice.reducer;

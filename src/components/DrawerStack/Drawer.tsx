@@ -159,7 +159,14 @@ const Drawer: React.FC<DrawerProps> = ({
       unregisterDrawer(fullPath);
       isRegisteredRef.current = false;
     };
-  }, [fullPath, registerDrawer, unregisterDrawer]);
+  }, [
+    content,
+    fullPath,
+    id,
+    registerDrawer,
+    unregisterDrawer,
+    widthMultiplier,
+  ]);
 
   // Content update effect with throttling
   useEffect(() => {

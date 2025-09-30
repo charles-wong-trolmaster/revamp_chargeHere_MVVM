@@ -7,7 +7,8 @@ import {
   setItems,
   LocationSubNavBarIconButtonProps,
   setHoveredIndex,
-  setSelectedIndex,
+  setSelectedItemIndex,
+  setSessionSubNavBar,
 } from "@/redux/features/subNavBar/subNavBarSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import React, { useEffect } from "react";
@@ -17,26 +18,36 @@ const SideNavbarContainier: React.FC = () => {
   const selectedNavBarItem = useAppSelector(getSelectedNavItem);
   const direction = useAppSelector((state) => state.subNavBar.direction);
   const items = useAppSelector((state) => state.subNavBar.items);
-  const selectedIndex = useAppSelector(
-    (state) => state.subNavBar.selectedIndex
+  const locationSideNavbarSelectedIndex = useAppSelector(
+    (state) => state.subNavBar.selectedItemIndex?.["location"]
+  );
+  const sessionSideNavbarSelectedIndex = useAppSelector(
+    (state) => state.subNavBar.selectedItemIndex?.["session"]
+  );
+
+  console.log(
+    "locationSideNavbarSelectedIndex" + locationSideNavbarSelectedIndex
+  );
+  console.log(
+    "sessionSideNavbarSelectedIndex" + sessionSideNavbarSelectedIndex
   );
   // Modified onSelect to accept the selected item and dispatch the style
   const locationItemOnSelect = (
     selectedItem: LocationSubNavBarIconButtonProps,
     index: number
   ) => {
-    dispatch(setSelectedIndex(index));
-    console.log(selectedItem);
+    dispatch(setSelectedItemIndex({ location: index }));
     if (selectedItem.mapboxStyle) {
       dispatch(setSelectedStyle(selectedItem.mapboxStyle));
     }
   };
 
+  const sessionOnSelect = (selectedItem: IconButtonProps, index: number) => {
+    dispatch(setSelectedItemIndex({ session: index }));
+  };
+
   const onSelect = (selectedItem: IconButtonProps, index: number) => {
-    dispatch(setSelectedIndex(index));
-    if (selectedItem.style) {
-      dispatch(setSelectedStyle(selectedItem.style));
-    }
+    console.log(selectedItem);
   };
 
   const onHover = (
@@ -68,11 +79,12 @@ const SideNavbarContainier: React.FC = () => {
   };
 
   useEffect(() => {
-    if (selectedNavBarItem && selectedNavBarItem.name === "Location") {
+    if (selectedNavBarItem && selectedNavBarItem.id === "location") {
       dispatch(setLocationSubNavBar());
+    } else if (selectedNavBarItem && selectedNavBarItem.id === "session") {
+      dispatch(setSessionSubNavBar());
     } else {
       dispatch(setItems([]));
-      dispatch(setSelectedIndex(undefined));
     }
   }, [selectedNavBarItem, dispatch]);
 
@@ -80,14 +92,22 @@ const SideNavbarContainier: React.FC = () => {
     <NavBar
       direction={direction}
       onSelect={
-        selectedNavBarItem && selectedNavBarItem.name === "Location"
+        selectedNavBarItem && selectedNavBarItem.id === "location"
           ? locationItemOnSelect
+          : selectedNavBarItem && selectedNavBarItem.id === "session"
+          ? sessionOnSelect
           : onSelect
       }
       items={items}
       onHover={onHover}
       onUnHover={onUnHover}
-      selectedIndex={selectedIndex}
+      selectedIndex={
+        selectedNavBarItem && selectedNavBarItem.id === "location"
+          ? locationSideNavbarSelectedIndex
+          : selectedNavBarItem && selectedNavBarItem.id === "session"
+          ? sessionSideNavbarSelectedIndex
+          : undefined
+      }
     />
   );
 };
