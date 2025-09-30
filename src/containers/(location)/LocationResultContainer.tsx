@@ -36,21 +36,17 @@ const LocationResultContainer = () => {
   };
 
   return (
-    // <LocationDrawer
-    //   title="Location"
-    //   isFetching={isFetchingNextPage}
-    //   isLoading={isLoading}
-    //   hasNextPage={hasNextPage}
-    //   handleScroll={onScrollToBottom}
-    //   onScrollToBottom={onScrollToBottom}
-    //   items={items}
-    //   onClose={closeCurrentDrawer}
-    //   onItemClick={handleItemClick}
-    // />
-
-    // For testing only
-    <LocationDetailDrawerContainer />
-    // <CreateLocationForm title={"add location testing"} />
+    <LocationDrawer
+      title="Location"
+      isFetching={isFetchingNextPage}
+      isLoading={isLoading}
+      hasNextPage={hasNextPage}
+      handleScroll={onScrollToBottom}
+      onScrollToBottom={onScrollToBottom}
+      items={items}
+      onClose={closeCurrentDrawer}
+      onItemClick={handleItemClick}
+    />
   );
 };
 

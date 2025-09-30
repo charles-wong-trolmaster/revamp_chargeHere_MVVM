@@ -168,7 +168,7 @@ const LocationDetailDrawer: React.FC<DrawerProps> = ({
                 )}
               </div>
 
-              <div className="uk-padding-small ">
+              <div className="uk-padding-small">
                 {/* Header Section */}
                 <div className="uk-flex uk-flex-between uk-flex-middle">
                   <span>{itemDetail.name}</span>

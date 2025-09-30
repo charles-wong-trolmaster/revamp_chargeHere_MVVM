@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import GeoCodeAddressInput from "./GeoCodeAddressInput";
 import Panel from "./Panel";
-import { FacilityEnum } from "@/interfaces";
+import { FacilityEnum, Location } from "@/interfaces";
 import AmenitiesIcon from "./AmenitiesIcon";
-import Tabs, { Tab } from "./Tabs";
 
 interface CreateLocationFormProps {
   title?: string;
   onClose?: () => void;
+  onSubmit?: (data: Location) => void;
 }
 
 interface RegularHour {
@@ -17,26 +17,8 @@ interface RegularHour {
   period_end: string;
 }
 
-interface OpeningTimes {
-  twentyfourseven: boolean;
-  regular_hours: RegularHour[];
-}
-
-interface FormData {
-  name: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  state: string;
-  country: string;
-  latitude: string;
-  longitude: string;
-  opening_times: OpeningTimes;
-  facilities: string[];
-}
-
 const CreateLocationForm = (props: CreateLocationFormProps) => {
-  const { title, onClose } = props;
+  const { title, onClose, onSubmit } = props;
   const {
     control,
     watch,
@@ -44,21 +26,27 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
     getValues,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({
+  } = useForm<Location>({
     defaultValues: {
+      country_code: "",
+      party_id: "",
+      publish: false,
       name: "",
       address: "",
       city: "",
-      postalCode: "",
+      postal_code: "",
       state: "",
       country: "",
-      latitude: "",
-      longitude: "",
+      coordinates: {
+        latitude: "",
+        longitude: "",
+      },
+      facilities: [],
+      time_zone: "",
       opening_times: {
         twentyfourseven: false,
         regular_hours: [],
       },
-      facilities: [],
     },
   });
 
@@ -67,11 +55,11 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
   const watchedAddress = watch([
     "address",
     "city",
-    "postalCode",
+    "postal_code",
     "state",
     "country",
-    "latitude",
-    "longitude",
+    "coordinates.latitude",
+    "coordinates.longitude",
   ]);
 
   const handleAddressChange = (newAddressData: {
@@ -85,11 +73,11 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
   }) => {
     setValue("address", newAddressData.address);
     setValue("city", newAddressData.city);
-    setValue("postalCode", newAddressData.postalCode);
+    setValue("postal_code", newAddressData.postalCode);
     setValue("state", newAddressData.state);
     setValue("country", newAddressData.country);
-    setValue("latitude", newAddressData.latitude);
-    setValue("longitude", newAddressData.longitude);
+    setValue("coordinates.latitude", newAddressData.latitude);
+    setValue("coordinates.longitude", newAddressData.longitude);
   };
 
   const handleToggleChange = (checked: boolean) => {
@@ -99,24 +87,24 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
     });
   };
 
-  const handleFacilityToggle = (facility: string) => {
+  const handleFacilityToggle = (facility: FacilityEnum) => {
     const currentFacilities = getValues("facilities");
-    const isSelected = currentFacilities.includes(facility);
+    const isSelected = currentFacilities?.includes(facility);
 
     if (isSelected) {
       setValue(
         "facilities",
-        currentFacilities.filter((f) => f !== facility)
+        currentFacilities?.filter((f) => f !== facility)
       );
     } else {
-      setValue("facilities", [...currentFacilities, facility]);
+      setValue("facilities", [...(currentFacilities || []), facility]);
     }
   };
 
   const addRegularHour = () => {
     const currentHours = getValues("opening_times.regular_hours");
     setValue("opening_times.regular_hours", [
-      ...currentHours,
+      ...(currentHours || []),
       {
         weekday: 1,
         period_begin: "09:00",
@@ -127,7 +115,7 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
 
   const removeRegularHour = (index: number) => {
     const currentHours = getValues("opening_times.regular_hours");
-    const newHours = [...currentHours];
+    const newHours = [...(currentHours || [])];
     newHours.splice(index, 1);
     setValue("opening_times.regular_hours", newHours);
   };
@@ -138,7 +126,7 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
     value: string | number
   ) => {
     const currentHours = getValues("opening_times.regular_hours");
-    const newHours = [...currentHours];
+    const newHours = [...(currentHours || [])];
     newHours[index] = {
       ...newHours[index],
       [field]: value,
@@ -146,20 +134,13 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
     setValue("opening_times.regular_hours", newHours);
   };
 
-  const onSubmit = (data: FormData) => {
+  const onFormSubmit = (data: Location) => {
+    if (onSubmit) {
+      onSubmit(data);
+    }
     console.log("Form submitted:", data);
   };
 
-  const tabsData: Tab[] = [
-    {
-      label: "Tab 1",
-      content: <div>Content for Tab 1</div>,
-    },
-    {
-      label: "Tab 2",
-      content: <div>Content for Tab 2</div>,
-    },
-  ];
   const renderContent = () => {
     return (
       <>
@@ -186,10 +167,6 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
               />
             </div>
 
-            {/* Tab Field*/}
-            <div className="">
-              <Tabs tabs={tabsData} />
-            </div>
             {/* Address Field */}
             <div className="uk-margin">
               <label className="uk-form-label uk-text-bold uk-text-large uk-light">
@@ -371,7 +348,7 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
                     uk-grid=""
                   >
                     {Object.values(FacilityEnum).map((facility) => {
-                      const isSelected = watchedFacilities.includes(facility);
+                      const isSelected = watchedFacilities?.includes(facility);
                       return (
                         <div key={facility}>
                           <button
@@ -400,7 +377,7 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              onClick={handleSubmit(onSubmit)}
+              onClick={handleSubmit(onFormSubmit)}
               className={`uk-button uk-button-primary uk-width-1-1 ${
                 isSubmitting ? "uk-disabled" : ""
               }`}
@@ -423,7 +400,7 @@ const CreateLocationForm = (props: CreateLocationFormProps) => {
       height="80vh"
     >
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onFormSubmit)}
         className="uk-height-1-1 uk-position-relative"
       >
         {renderContent()}

@@ -51,7 +51,12 @@ const LocationDetailDrawer: React.FC<LocationDrawerProps> = ({
   };
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
-      <LocationDetailContent drawerId={id} />
+      <LocationDetailContent
+        drawerId={id}
+        title={"Location Detail"}
+        itemDetail={locationDetail}
+        onClose={() => closeDrawer(id)}
+      />
       <LocationGalleryDrawer id="locationGallery" />
       <LocationEditDrawer id="locationEdit" />
       <LocationEVSEDrawer id="locationEVSE" />

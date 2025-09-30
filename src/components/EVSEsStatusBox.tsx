@@ -1,4 +1,4 @@
-import { EVSE, StatusEnum } from "@/interfaces";
+import { Connector, EVSE, StatusEnum } from "@/interfaces";
 import React from "react";
 
 // Using your provided EVSE type
@@ -104,22 +104,24 @@ const EVSEsStatusBox: React.FC<EVSEsStatusBoxProps> = ({
             <div className="uk-margin-small-bottom">
               <div className="uk-text-muted uk-text-small">Connector</div>
               <div className="uk-flex uk-flex-wrap" style={{ gap: "5px" }}>
-                {evse.connectors.map((connector: any, connIndex: number) => (
-                  <div
-                    key={`evse-${evse.uid}-connector-${connIndex}`}
-                    className="uk-label"
-                    style={{
-                      backgroundColor: "#00B871",
-                      fontSize: "8px",
-                      padding: "4px 8px",
-                    }}
-                  >
-                    <div>STANDARD: {connector.standard}</div>
-                    <div>
-                      MAX ELECTRIC POWER: {connector.max_electric_power}
+                {evse.connectors.map(
+                  (connector: Connector, connIndex: number) => (
+                    <div
+                      key={`evse-${evse.uid}-connector-${connIndex}`}
+                      className="uk-label"
+                      style={{
+                        backgroundColor: "#00B871",
+                        fontSize: "8px",
+                        padding: "4px 8px",
+                      }}
+                    >
+                      <div>STANDARD: {connector.standard}</div>
+                      <div>
+                        MAX ELECTRIC POWER: {connector.max_electric_power}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
           )}
