@@ -11,17 +11,20 @@
     "sass": "sass --load-path=node_modules src/styles:public/styles --watch"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.7",
     "@reduxjs/toolkit": "^2.9.0",
-    "mapbox-gl": "^3.15.0",
     "framer-motion": "^12.23.18",
+    "mapbox-gl": "^3.15.0",
     "path": "^0.12.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.63.0",
     "react-redux": "^9.2.0",
     "uikit": "^3.23.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",

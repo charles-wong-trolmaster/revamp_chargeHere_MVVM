@@ -24,11 +24,11 @@ const LocationDrawer: React.FC<DrawerProps> = ({
   onClose,
   onItemClick,
   handleScroll,
-  onScrollToBottom,
 }) => {
   const renderContent = () => {
     return (
       <>
+        <span>hi</span>
         <LocationCard
           isFetching={isFetching}
           isLoading={isLoading}
@@ -36,7 +36,6 @@ const LocationDrawer: React.FC<DrawerProps> = ({
           items={items}
           onItemClick={onItemClick}
           onScroll={handleScroll}
-          onScrollToBottom={onScrollToBottom}
         />
       </>
     );
@@ -46,8 +45,8 @@ const LocationDrawer: React.FC<DrawerProps> = ({
       <Panel
         isOpen={true}
         showHeader={true}
-        headerTitle={title}
-        onClose={onClose}
+        headerTitle={`Result (${items.length})`}
+        onClose={() => {}}
         width="350px"
         height="80vh"
         children={renderContent()}

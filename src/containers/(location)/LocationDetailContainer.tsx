@@ -64,6 +64,7 @@ const LocationDetailContainer = () => {
   return (
     <LocationDetailDrawer
       title="Location Detail"
+      itemDetail={locationDetail}
       onClose={closeCurrentDrawer}
       onItemClick={onItemClick}
     />

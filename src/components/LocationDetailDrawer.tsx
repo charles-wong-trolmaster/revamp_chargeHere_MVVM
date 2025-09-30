@@ -1,29 +1,61 @@
 // components/MultiLevelDrawer/DrawerPanel.tsx
-import React from "react";
+import React, { useCallback } from "react";
 import { styles } from "@/styles/(layer 1)/locationStyles";
+import Panel from "./Panel";
+import AmenitiesList from "./AmenitiesList";
+import AvailabilityButton from "./AvailabilityButton";
+import EVSEsStatusBox from "./EVSEsStatusBox";
+import { StatusEnum } from "@/interfaces";
+// import { plusOutlineIcon } from "@progress/kendo-svg-icons";
 
 interface DrawerProps {
   title: string;
+  itemDetail: any;
   onClose: () => void;
   onItemClick: () => void;
+  onAvailabilityClick?: () => void;
+  onEditLocationClick?: () => void;
+  onGalleryClick?: () => void;
+  onGetDirectionsClick?: () => void;
 }
 
 const LocationDetailDrawer: React.FC<DrawerProps> = ({
   title,
+  itemDetail,
   onClose,
-  onItemClick,
+  // onItemClick,
+  onAvailabilityClick,
+  onEditLocationClick,
+  onGalleryClick,
+  // onGetDirectionsClick,
 }) => {
-  return (
-    <div style={styles.container}>
-      <div style={styles.locationsPanel}>
-        <div style={styles.locationsHeader}>
-          <span style={styles.headerTitle}>{title}</span>
+  console.log("qqq itemDetail", itemDetail);
 
-          <button style={styles.closeButton} onClick={onClose}>
-            ×
-          </button>
-        </div>
+  const handleEvseClick = (evseUid: string) => {
+    console.log("EVSE clicked:", evseUid);
+    // Your logic here, e.g.:
+    // selectedEvseIdRef.current = evseUid;
+    // editEVSEPanel.open(evseUid);
+  };
+  const getStatusLabel = useCallback((status: StatusEnum): string => {
+    switch (status) {
+      case "AVAILABLE":
+        return "Available";
+      case "CHARGING":
+      case "RESERVED":
+      case "PLANNED":
+        return "Unavailable";
+      default:
+        return "Error";
+    }
+  }, []);
 
+  const renderContent = (itemDetail: any) => {
+    if (!itemDetail) {
+      return <div>No details available</div>;
+    }
+    return (
+      <>
         <div style={styles.contentContainer}>
           <div
             style={{
@@ -37,37 +69,186 @@ const LocationDetailDrawer: React.FC<DrawerProps> = ({
             className="locations-list"
           >
             <div className="tab-content">
-              <button onClick={onItemClick} style={styles.locationButton(true)}>
-                <div style={styles.locationItem}>
+              {/* Image Section */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    overflow: "hidden",
+                  }}
+                >
+                  {itemDetail.images && itemDetail.images.length > 0 ? (
+                    <img
+                      src={itemDetail.images[0].url}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        background: "grey",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#666",
+                      }}
+                    >
+                      No image available
+                    </div>
+                  )}
+                </div>
+                {itemDetail.images && itemDetail.images.length > 0 ? (
                   <div
                     style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      marginLeft: "10px",
-                      gap: "10px",
-                      width: "100%",
+                      position: "absolute" as const,
+                      bottom: "10px",
+                      right: "10px",
+                      zIndex: 1,
                     }}
                   >
-                    <span style={styles.locationName}>{"Location 1"}</span>
-                    <span style={styles.locationFieldContent}>{"City"}</span>
+                    <button
+                      style={{
+                        backgroundColor: "#0554f3ff",
+                        color: "white",
+                        padding: "6px",
+                        fontSize: "12px",
+                        borderRadius: "7px",
+                        border: "none",
+                        cursor: "pointer",
+                        width: "auto",
+                        height: "30px",
+                      }}
+                      onClick={onGalleryClick}
+                    >
+                      <span>All Photos</span>
+                    </button>
                   </div>
+                ) : (
+                  <div
+                    style={{
+                      position: "absolute" as const,
+                      bottom: "10px",
+                      right: "10px",
+                      zIndex: 1,
+                    }}
+                  >
+                    <button
+                      style={{
+                        backgroundColor: "rgb(0, 184, 113)",
+                        color: "white",
+                        padding: "6px",
+                        fontSize: "12px",
+                        borderRadius: "7px",
+                        border: "none",
+                        cursor: "pointer",
+                        width: "auto",
+                        height: "30px",
+                      }}
+                      onClick={() => {
+                        // galleryPanel.open();
+                      }}
+                    >
+                      {/* <SvgIcon icon={plusOutlineIcon} size="large" />{" "} */}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="uk-padding-small ">
+                {/* Header Section */}
+                <div className="uk-flex uk-flex-between uk-flex-middle">
+                  <span>{itemDetail.name}</span>
+                  <button onClick={onEditLocationClick}>{"Edit"}</button>
                 </div>
-              </button>
+                <div>
+                  <span>{itemDetail.address || "No address available"}</span>
+                </div>
+
+                {/* Detail Section */}
+                <div className="uk-flex uk-flex-between uk-flex-middle">
+                  <span>Open ・10:00 - 23:00</span>
+                  <button
+                    onClick={() => {
+                      // editLocationFormPanel.open();
+                    }}
+                  >
+                    {"call"}
+                  </button>
+                </div>
+
+                <EVSEsStatusBox
+                  locationDetail={itemDetail}
+                  onEvseClick={(evseUid) => {
+                    handleEvseClick(evseUid);
+                  }}
+                  getStatusLabel={getStatusLabel}
+                />
+
+                {/* Availability Section */}
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    color: "white",
+                    marginBottom: "8px",
+                    marginTop: "10px",
+                  }}
+                >
+                  Availability
+                </h3>
+                <AvailabilityButton
+                  name={itemDetail.availabilityStatus || "Unknown"}
+                  showFastCharge={itemDetail.hasFastCharge || false}
+                  fastChargeCount={itemDetail.fastChargeCount || 0}
+                  normalChargeCount={itemDetail.normalChargeCount || 0}
+                  onClick={onAvailabilityClick}
+                />
+
+                {/* Amenities Section */}
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    color: "white",
+                    marginBottom: "8px",
+                    marginTop: "10px",
+                  }}
+                >
+                  Facilities
+                </h3>
+                <AmenitiesList facilities={itemDetail.facilities} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
+    );
+  };
 
-      <style>
-        {`
-          ${styles.animationStyles}
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
-    </div>
+  return (
+    <Panel
+      isOpen={true}
+      showHeader={false}
+      headerTitle={title}
+      onClose={onClose}
+      width="350px"
+      height="80vh"
+      children={renderContent(itemDetail)}
+    ></Panel>
   );
 };
 

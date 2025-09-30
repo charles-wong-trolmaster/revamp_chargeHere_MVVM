@@ -4,6 +4,7 @@ import IconButton, { IconButtonProps } from "./IconButton";
 import { LocationSubNavBarIconButtonProps } from "@/redux/features/subNavBar/subNavBarSlice";
 
 interface NavbarProps extends NavBarState {
+  items: IconButtonProps[];
   onSelect?: (
     selectedItem: IconButtonProps | LocationSubNavBarIconButtonProps,
     index: number

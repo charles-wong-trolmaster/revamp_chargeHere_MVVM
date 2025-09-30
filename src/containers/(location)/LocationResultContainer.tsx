@@ -7,6 +7,7 @@ import { Location } from "@/interfaces/index";
 import useLocationItems from "@/hooks/useLocationItems";
 import { useAppDispatch } from "@/redux/store";
 import { setSelectedLocationId } from "@/redux/features/location/locationSlice";
+import CreateLocationForm from "@/components/CreateLocationPanel";
 
 const LocationResultContainer = () => {
   const dispatch = useAppDispatch();
@@ -35,17 +36,21 @@ const LocationResultContainer = () => {
   };
 
   return (
-    <LocationDrawer
-      title="Location"
-      isFetching={isFetchingNextPage}
-      isLoading={isLoading}
-      hasNextPage={hasNextPage}
-      handleScroll={onScrollToBottom}
-      onScrollToBottom={onScrollToBottom}
-      items={items}
-      onClose={closeCurrentDrawer}
-      onItemClick={handleItemClick}
-    />
+    // <LocationDrawer
+    //   title="Location"
+    //   isFetching={isFetchingNextPage}
+    //   isLoading={isLoading}
+    //   hasNextPage={hasNextPage}
+    //   handleScroll={onScrollToBottom}
+    //   onScrollToBottom={onScrollToBottom}
+    //   items={items}
+    //   onClose={closeCurrentDrawer}
+    //   onItemClick={handleItemClick}
+    // />
+
+    // For testing only
+    <LocationDetailDrawerContainer />
+    // <CreateLocationForm title={"add location testing"} />
   );
 };
 
