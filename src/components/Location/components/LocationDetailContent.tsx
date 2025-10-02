@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
 import { styles } from "@/styles/(layer 1)/locationStyles";
 import EVSEsStatusBox from "@/components/EVSEsStatusBox";
@@ -20,7 +19,6 @@ interface LocationSettingsContentProps {
 }
 
 const LocationDetailContent = (props: LocationSettingsContentProps) => {
-  const { openDrawer } = useDrawer();
   const {
     drawerId = "locationDetail",
     title,
@@ -55,7 +53,7 @@ const LocationDetailContent = (props: LocationSettingsContentProps) => {
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>Location Detail</h3>
       <div style={styles.contentContainer}>
         <div

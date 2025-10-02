@@ -1,29 +1,29 @@
 import React from "react";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface TariffContentProps {
   drawerId: string;
 }
 
 const TariffContent: React.FC<TariffContentProps> = ({ drawerId }) => {
-  const { openDrawer } = useDrawer();
+  const { openChild } = useDrawer();
 
   const handleDetailClick = () => {
     console.log("🖱️ Tariff Detail button clicked from TariffContent");
     console.log("📍 Current drawerId:", drawerId);
-    openDrawer("tariffDetail");
+    openChild("tariffDetail");
   };
 
   const handleCreationClick = () => {
     console.log("🖱️ Tariff Creation button clicked from TariffContent");
     console.log("📍 Current drawerId:", drawerId);
-    openDrawer("tariffCreation");
+    openChild("tariffCreation");
   };
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>Tariff</h3>
       <p>Manage your tariff settings and pricing structures.</p>
       <button onClick={handleDetailClick}>Tariff Detail</button>

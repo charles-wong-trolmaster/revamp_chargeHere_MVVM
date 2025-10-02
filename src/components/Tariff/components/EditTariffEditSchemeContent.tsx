@@ -5,17 +5,17 @@ interface SessionSettingsContentProps {
   drawerId?: string;
 }
 
-const UserEditContent: React.FC<SessionSettingsContentProps> = ({
-  drawerId = "userEdit",
+const EditTariffEditSchemeContent: React.FC<SessionSettingsContentProps> = ({
+  drawerId = "editTariffEditScheme",
 }) => {
   return (
     <>
       <DrawerCloseButton />
-      <h3>User Edit</h3>
+      <h3>Tariff Edit Scheme</h3>
       <p>Configure your session preferences and timeouts.</p>
       <p>Set session duration, auto-logout, and security preferences.</p>
     </>
   );
 };
 
-export default UserEditContent;
+export default EditTariffEditSchemeContent;

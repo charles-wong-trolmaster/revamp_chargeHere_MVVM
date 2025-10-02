@@ -1,7 +1,5 @@
 import React, {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -9,22 +7,12 @@ import React, {
 } from "react";
 import styles from "./DrawerStack.module.scss";
 import "./DrawerStack.scss";
+import {
+  DrawerStackContext,
+  type DrawerStackContextType,
+} from "./DrawerStackContext";
 
 // Types
-interface DrawerStackContextType {
-  openDrawer: (drawerId: string) => void;
-  closeDrawer: (drawerId: string) => void;
-  openDrawerGlobal: (namespace: string, drawerId: string) => void;
-  registerDrawer: (
-    path: string,
-    content: React.ReactNode,
-    widthMultiplier?: number
-  ) => void; // Add widthMultiplier parameter
-  unregisterDrawer: (path: string) => void;
-  visibleDrawers: Set<string>;
-  closingDrawers: Set<string>;
-}
-
 interface DrawerStackProps {
   activeDrawer?: string;
   children: React.ReactNode;
@@ -45,15 +33,46 @@ interface AnimationState {
   cleanupTimeoutId?: NodeJS.Timeout;
 }
 
-// Context
-const DrawerStackContext = createContext<DrawerStackContextType | null>(null);
-
-export const useDrawer = () => {
-  const context = useContext(DrawerStackContext);
-  if (!context) {
-    throw new Error("useDrawer must be used within a DrawerStack");
+// Helper function for resolving relative paths
+const resolveRelativePath = (
+  currentPath: string,
+  relativePath: string
+): string => {
+  // Handle absolute paths (no change needed)
+  if (!relativePath.startsWith(".")) {
+    return relativePath;
   }
-  return context;
+
+  // Split current path into segments
+  const currentSegments = currentPath.split("/").filter(Boolean);
+
+  // Handle relative path
+  if (relativePath.startsWith("./")) {
+    // Child path: './settings' from 'location' → 'location/settings'
+    const childId = relativePath.slice(2); // Remove './'
+    return currentPath + "/" + childId;
+  }
+
+  if (relativePath.startsWith("../")) {
+    // Parent/sibling path: '../history' from 'location/settings' → 'location/history'
+    let segments = [...currentSegments];
+    let remaining = relativePath;
+
+    // Process each '../'
+    while (remaining.startsWith("../")) {
+      segments.pop(); // Go up one level
+      remaining = remaining.slice(3); // Remove '../'
+    }
+
+    // If there's a remaining path, add it
+    if (remaining) {
+      segments.push(remaining);
+    }
+
+    return segments.join("/");
+  }
+
+  return relativePath;
 };
 
 // Main Component
@@ -67,6 +86,7 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
   const [registeredDrawers, setRegisteredDrawers] = useState<
     Map<string, DrawerRegistration>
   >(new Map());
+  const [registrationComplete, setRegistrationComplete] = useState(false);
 
   // Refs
   const previousActiveRootRef = useRef<string | null>(null);
@@ -74,6 +94,7 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
   const animationControllerRef = useRef<AbortController | null>(null);
   const activeAnimations = useRef<Map<string, AnimationState>>(new Map());
   const globalCleanupTimeout = useRef<NodeJS.Timeout | null>(null);
+  const registrationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Animation timing configuration
   const animationTimings = useMemo(() => {
@@ -108,6 +129,55 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
       : rootDrawerIds[0];
   }, [activeDrawer, rootDrawerIds]);
 
+  // ✅ Calculate current drawer path (deepest visible drawer)
+  const currentDrawerPath = useMemo(() => {
+    if (visibleDrawers.size === 0) {
+      return activeRoot || "";
+    }
+
+    // Find the deepest visible drawer (highest level)
+    const visiblePaths = Array.from(visibleDrawers);
+    const deepestPath = visiblePaths.reduce((deepest, current) => {
+      const currentLevel = (current.match(/\//g) || []).length;
+      const deepestLevel = (deepest.match(/\//g) || []).length;
+      return currentLevel > deepestLevel ? current : deepest;
+    });
+
+    return deepestPath;
+  }, [visibleDrawers, activeRoot]);
+
+  // Collect all drawer IDs from component tree for validation
+  const collectAllDrawerIds = useCallback(
+    (element: React.ReactNode, currentPath = ""): string[] => {
+      const ids: string[] = [];
+
+      React.Children.forEach(element, (child) => {
+        if (React.isValidElement(child)) {
+          const childProps = child.props as any;
+
+          // If this element has an ID, it's a drawer
+          if (childProps.id) {
+            const fullPath = currentPath
+              ? `${currentPath}/${childProps.id}`
+              : childProps.id;
+            ids.push(fullPath);
+
+            // Recursively collect from children
+            if (childProps.children) {
+              ids.push(...collectAllDrawerIds(childProps.children, fullPath));
+            }
+          } else if (childProps.children) {
+            // No ID but has children, keep looking
+            ids.push(...collectAllDrawerIds(childProps.children, currentPath));
+          }
+        }
+      });
+
+      return ids;
+    },
+    []
+  );
+
   // Drawer registration
   const registerDrawer = useCallback(
     (path: string, content: React.ReactNode, widthMultiplier?: number) => {
@@ -117,7 +187,7 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
         content,
         level,
         widthMultiplier: widthMultiplier || 1,
-      }; // Default to 1
+      };
       setRegisteredDrawers((prev) => new Map(prev).set(path, registration));
     },
     []
@@ -130,6 +200,54 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
       return newMap;
     });
   }, []);
+
+  // Registration completion handling
+  useEffect(() => {
+    if (registrationTimeoutRef.current) {
+      clearTimeout(registrationTimeoutRef.current);
+    }
+
+    // Give a short time for all drawers to register, then mark complete
+    registrationTimeoutRef.current = setTimeout(() => {
+      setRegistrationComplete(true);
+    }, 50);
+
+    return () => {
+      if (registrationTimeoutRef.current) {
+        clearTimeout(registrationTimeoutRef.current);
+      }
+    };
+  }, [children]);
+
+  // Development validation
+  useEffect(() => {
+    if (registrationComplete && process.env.NODE_ENV === "development") {
+      const expectedDrawers = collectAllDrawerIds(children);
+      const registeredPaths = Array.from(registeredDrawers.keys());
+
+      const missing = expectedDrawers.filter(
+        (id) => !registeredPaths.includes(id)
+      );
+      const extra = registeredPaths.filter(
+        (path) => !expectedDrawers.includes(path)
+      );
+
+      if (missing.length > 0) {
+        console.warn(
+          `⚠️ [DrawerStack] Expected drawers not registered:`,
+          missing
+        );
+      }
+      if (extra.length > 0) {
+        console.warn(`⚠️ [DrawerStack] Extra registered drawers:`, extra);
+      }
+
+      console.log(
+        `✅ [DrawerStack] Registration complete. Available drawers:`,
+        registeredPaths
+      );
+    }
+  }, [registrationComplete, registeredDrawers, children, collectAllDrawerIds]);
 
   // Safe state updates
   const safeSetState = useCallback((setter: any) => {
@@ -253,6 +371,11 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
     if (globalCleanupTimeout.current) {
       clearTimeout(globalCleanupTimeout.current);
       globalCleanupTimeout.current = null;
+    }
+
+    if (registrationTimeoutRef.current) {
+      clearTimeout(registrationTimeoutRef.current);
+      registrationTimeoutRef.current = null;
     }
 
     if (animationControllerRef.current) {
@@ -381,168 +504,196 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
     [animationTimings, cleanup, createSafeAnimation, safeSetState]
   );
 
-  // Path resolution
-  const findDrawerPath = useCallback(
-    (drawerId: string): string | null => {
-      const registeredPaths = Array.from(registeredDrawers.keys());
-
-      // Exact match
-      if (registeredPaths.includes(drawerId)) {
-        return drawerId;
-      }
-
-      // Find paths ending with the drawer ID
-      const matchingPaths = registeredPaths.filter((path) =>
-        path.endsWith("/" + drawerId)
-      );
-
-      if (matchingPaths.length === 0) {
-        return null;
-      }
-
-      if (matchingPaths.length === 1) {
-        return matchingPaths[0];
-      }
-
-      // Prefer paths under active root
-      const activeRootPaths = matchingPaths.filter((path) =>
-        path.startsWith(activeRoot + "/")
-      );
-      if (activeRootPaths.length > 0) {
-        return activeRootPaths[0];
-      }
-
-      // Check visible drawer contexts
-      const sortedVisibleDrawers = Array.from(visibleDrawers).sort(
-        (a, b) => b.length - a.length
-      );
-      for (const visiblePath of sortedVisibleDrawers) {
-        const contextPaths = matchingPaths.filter((path) =>
-          path.startsWith(visiblePath + "/")
-        );
-        if (contextPaths.length > 0) {
-          return contextPaths[0];
-        }
-      }
-
-      return matchingPaths[0];
-    },
-    [registeredDrawers, visibleDrawers, activeRoot]
-  );
-
-  // Public API functions
+  // Relative path navigation only
   const openDrawer = useCallback(
-    (drawerId: string) => {
-      const tryOpenDrawer = (retryCount = 0) => {
-        const targetPath = findDrawerPath(drawerId);
+    (drawerIdOrPath: string, sourceDrawerPath?: string) => {
+      if (!registrationComplete) {
+        console.warn(
+          `⚠️ [DrawerStack] Drawers not ready yet. Ignoring openDrawer("${drawerIdOrPath}").`
+        );
+        return;
+      }
 
-        if (!targetPath) {
-          if (retryCount < 3) {
-            setTimeout(() => tryOpenDrawer(retryCount + 1), 10);
-            return;
-          }
+      let targetPath: string;
+
+      // Handle relative paths
+      if (drawerIdOrPath.startsWith(".")) {
+        if (!sourceDrawerPath) {
+          console.error(
+            "❌ [DrawerStack] Relative path requires source context:",
+            drawerIdOrPath
+          );
           return;
         }
+        targetPath = resolveRelativePath(sourceDrawerPath, drawerIdOrPath);
+      } else {
+        // Treat as absolute path
+        targetPath = drawerIdOrPath;
+      }
 
-        if (visibleDrawers.has(targetPath)) {
-          return;
-        }
+      // Verify the target drawer exists
+      if (!registeredDrawers.has(targetPath)) {
+        console.error(
+          "❌ [DrawerStack] Target drawer not registered:",
+          targetPath,
+          "Available:",
+          Array.from(registeredDrawers.keys())
+        );
+        return;
+      }
 
-        // Build hierarchy
-        const pathParts = targetPath.split("/");
-        const hierarchyPaths: string[] = [];
-        for (let i = 1; i <= pathParts.length; i++) {
-          hierarchyPaths.push(pathParts.slice(0, i).join("/"));
-        }
+      if (visibleDrawers.has(targetPath)) {
+        return;
+      }
 
-        const targetLevel = pathParts.length - 1;
-        const currentVisible = Array.from(visibleDrawers);
+      // Build hierarchy paths
+      const pathParts = targetPath.split("/");
+      const hierarchyPaths: string[] = [];
+      for (let i = 1; i <= pathParts.length; i++) {
+        hierarchyPaths.push(pathParts.slice(0, i).join("/"));
+      }
 
-        // Determine what to close
-        const toClose = currentVisible.filter((visiblePath) => {
-          const visibleParts = visiblePath.split("/");
-          const visibleLevel = visibleParts.length - 1;
-          const isInTargetHierarchy = hierarchyPaths.includes(visiblePath);
+      const missingPaths = hierarchyPaths.filter(
+        (path) => !registeredDrawers.has(path)
+      );
+      if (missingPaths.length > 0) {
+        console.error(
+          `❌ [DrawerStack] Missing drawer(s) in hierarchy for "${targetPath}":`,
+          missingPaths
+        );
+        return;
+      }
 
-          if (isInTargetHierarchy) return false;
+      const targetLevel = pathParts.length - 1;
+      const currentVisible = Array.from(visibleDrawers);
 
-          // Check for conflicts at each level
-          for (
-            let level = 1;
-            level <= Math.max(visibleLevel, targetLevel);
-            level++
-          ) {
+      // Determine what to close
+      const toClose = currentVisible.filter((visiblePath) => {
+        const visibleParts = visiblePath.split("/");
+        const visibleLevel = visibleParts.length - 1;
+        const isInTargetHierarchy = hierarchyPaths.includes(visiblePath);
+
+        if (isInTargetHierarchy) return false;
+
+        // Check for conflicts at each level
+        for (
+          let level = 1;
+          level <= Math.max(visibleLevel, targetLevel);
+          level++
+        ) {
+          if (level <= visibleLevel && level <= targetLevel) {
+            const visibleParentAtLevel = visibleParts.slice(0, level).join("/");
+            const targetParentAtLevel = pathParts.slice(0, level).join("/");
             const visibleAtLevel = visibleParts.slice(0, level + 1).join("/");
             const targetAtLevel = pathParts.slice(0, level + 1).join("/");
 
-            if (level <= visibleLevel && level <= targetLevel) {
-              const visibleParentAtLevel = visibleParts
-                .slice(0, level)
-                .join("/");
-              const targetParentAtLevel = pathParts.slice(0, level).join("/");
-
-              if (
-                visibleParentAtLevel === targetParentAtLevel &&
-                visibleAtLevel !== targetAtLevel
-              ) {
-                return true;
-              }
-            }
-
-            if (level <= targetLevel && visibleLevel > level) {
-              const targetAtLevel = pathParts.slice(0, level + 1).join("/");
-              if (
-                visiblePath.startsWith(
-                  targetAtLevel.split("/").slice(0, -1).join("/") + "/"
-                ) &&
-                !visiblePath.startsWith(targetAtLevel + "/")
-              ) {
-                return true;
-              }
+            if (
+              visibleParentAtLevel === targetParentAtLevel &&
+              visibleAtLevel !== targetAtLevel
+            ) {
+              return true;
             }
           }
 
-          return false;
-        });
-
-        const toOpen = hierarchyPaths.filter(
-          (path) => !visibleDrawers.has(path)
-        );
-
-        // Execute animation sequence
-        if (toClose.length > 0) {
-          closeDrawersWithAnimation(toClose, () => {
-            if (mountedRef.current) {
-              openDrawersWithAnimation(toOpen);
+          if (level <= targetLevel && visibleLevel > level) {
+            const targetAtLevel = pathParts.slice(0, level + 1).join("/");
+            if (
+              visiblePath.startsWith(
+                targetAtLevel.split("/").slice(0, -1).join("/") + "/"
+              ) &&
+              !visiblePath.startsWith(targetAtLevel + "/")
+            ) {
+              return true;
             }
-          });
-        } else {
-          openDrawersWithAnimation(toOpen);
+          }
         }
-      };
 
-      tryOpenDrawer();
+        return false;
+      });
+
+      const toOpen = hierarchyPaths.filter((path) => !visibleDrawers.has(path));
+
+      // Execute animation sequence
+      if (toClose.length > 0) {
+        closeDrawersWithAnimation(toClose, () => {
+          if (mountedRef.current) {
+            openDrawersWithAnimation(toOpen);
+          }
+        });
+      } else {
+        openDrawersWithAnimation(toOpen);
+      }
     },
     [
+      registrationComplete,
       visibleDrawers,
-      findDrawerPath,
       closeDrawersWithAnimation,
       openDrawersWithAnimation,
+      registeredDrawers,
     ]
   );
 
+  // closeDrawer with relative path support
   const closeDrawer = useCallback(
-    (drawerId: string) => {
-      const targetPath = findDrawerPath(drawerId);
-      if (!targetPath) return;
+    (relativePath?: string, sourceDrawerPath?: string) => {
+      if (!sourceDrawerPath) {
+        console.error("❌ [DrawerStack] closeDrawer requires source context");
+        return;
+      }
 
-      const toClose = Array.from(visibleDrawers).filter(
-        (path) => path === targetPath || path.startsWith(targetPath + "/")
-      );
+      let targetPath: string;
 
-      closeDrawersWithAnimation(toClose);
+      if (!relativePath || relativePath === "..") {
+        // Close current drawer (go to parent)
+        const segments = sourceDrawerPath.split("/").filter(Boolean);
+
+        // Check if this is a first-level drawer trying to go to parent
+        if (segments.length === 1) {
+          // This is a root/first-level drawer - close it entirely
+          console.log("🔴 First-level drawer closing:", sourceDrawerPath);
+          const toClose = Array.from(visibleDrawers).filter(
+            (path) =>
+              path === sourceDrawerPath ||
+              path.startsWith(sourceDrawerPath + "/")
+          );
+          if (toClose.length > 0) {
+            closeDrawersWithAnimation(toClose);
+          }
+          return;
+        }
+
+        segments.pop(); // Remove current drawer
+        targetPath = segments.join("/") || activeRoot;
+      } else if (relativePath.startsWith("../")) {
+        // Close to specific ancestor
+        targetPath = resolveRelativePath(sourceDrawerPath, relativePath);
+      } else {
+        console.error("❌ [DrawerStack] Invalid close path:", relativePath);
+        return;
+      }
+
+      // Find all drawers that should be closed (current + descendants)
+      const toClose = Array.from(visibleDrawers).filter((path) => {
+        return (
+          path.length > targetPath.length &&
+          (targetPath === "" || path.startsWith(targetPath + "/"))
+        );
+      });
+
+      if (toClose.length > 0) {
+        closeDrawersWithAnimation(toClose, () => {
+          if (
+            mountedRef.current &&
+            targetPath &&
+            !visibleDrawers.has(targetPath)
+          ) {
+            // If target is not currently visible, open it
+            openDrawer(targetPath);
+          }
+        });
+      }
     },
-    [visibleDrawers, findDrawerPath, closeDrawersWithAnimation]
+    [activeRoot, visibleDrawers, closeDrawersWithAnimation, openDrawer]
   );
 
   const openDrawerGlobal = useCallback(
@@ -554,8 +705,8 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
     [activeRoot, openDrawer]
   );
 
-  // Context value
-  const contextValue = useMemo(
+  // ✅ Context value with currentDrawerPath
+  const contextValue: DrawerStackContextType = useMemo(
     () => ({
       openDrawer,
       closeDrawer,
@@ -564,8 +715,9 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
       unregisterDrawer,
       visibleDrawers,
       closingDrawers,
+      currentDrawerPath, // ✅ Added
     }),
-    [registerDrawer, unregisterDrawer, visibleDrawers, closingDrawers] // Remove the functions that depend on state
+    [registerDrawer, unregisterDrawer, visibleDrawers, closingDrawers]
   );
 
   // Effects
@@ -617,7 +769,7 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
         {Array.from(registeredDrawers.values())
           .sort((a, b) => a.level - b.level)
           .map((registration) => {
-            const { path, content, level, widthMultiplier } = registration; // Destructure widthMultiplier
+            const { path, content, level, widthMultiplier } = registration;
             const isVisible = visibleDrawers.has(path);
             const isClosing = closingDrawers.has(path);
 
@@ -632,7 +784,7 @@ const DrawerStack: React.FC<DrawerStackProps> = ({
                 style={
                   {
                     zIndex: 1000 - level,
-                    "--drawer-width-multiplier": widthMultiplier || 1, // Default to 1 if not provided
+                    "--drawer-width-multiplier": widthMultiplier || 1,
                   } as React.CSSProperties & {
                     "--drawer-width-multiplier": number;
                   }

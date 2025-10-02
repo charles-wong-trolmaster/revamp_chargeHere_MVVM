@@ -6,23 +6,21 @@ interface SessionSettingsContentProps {
   drawerId?: string;
 }
 
-const StationContent: React.FC<SessionSettingsContentProps> = () => {
+const StationUnconfiguredContent: React.FC<
+  SessionSettingsContentProps
+> = () => {
   const { openChild } = useDrawer();
-
   return (
     <>
       <DrawerCloseButton />
-      <h3>Station</h3>
+      <h3>Unconfigured</h3>
       <p>Configure your session preferences and timeouts.</p>
       <p>Set session duration, auto-logout, and security preferences.</p>
-      <button onClick={() => openChild("stationPlanned")}>Planned</button>
-      <button onClick={() => openChild("stationAssigned")}>Assigned</button>
-      <button onClick={() => openChild("stationUnconfigured")}>
-        Unconfigured
+      <button onClick={() => openChild("stationEditConnector")}>
+        Edit Connector
       </button>
-      <button onClick={() => openChild("stationUnassigned")}>Unassigned</button>
     </>
   );
 };
 
-export default StationContent;
+export default StationUnconfiguredContent;

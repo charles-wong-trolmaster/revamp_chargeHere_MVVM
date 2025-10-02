@@ -4,14 +4,12 @@ import { CapabilityEnum, EVSE, ParkingRestrictionEnum } from "@/interfaces";
 import { useFieldArray, useForm } from "react-hook-form";
 
 interface LocationSettingsContentProps {
-  drawerId?: string;
   evseFormOnSubmit: (evseData: EVSE) => void;
   evseFormData?: EVSE;
   locationId?: string;
 }
 
 const LocationEditEVSEContent: React.FC<LocationSettingsContentProps> = ({
-  drawerId = "locationEditEVSE",
   evseFormOnSubmit,
   evseFormData,
   //   locationId,
@@ -100,7 +98,7 @@ const LocationEditEVSEContent: React.FC<LocationSettingsContentProps> = ({
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>Location Edit EVSE</h3>
       <div
         className="uk-position-fixed uk-position-top uk-width-1-1 uk-height-1-1 uk-flex uk-flex-center uk-flex-middle"

@@ -44,7 +44,7 @@ const locationSubNavBarItems: LocationSubNavBarIconButtonProps[] = [
 
 const sessionSubNavBarItems: IconButtonProps[] = [
   {
-    id: "onGoinig",
+    id: "onGoing",
     name: "On Going",
     icon: "/icons/search.svg",
     showTooltip: false,
@@ -61,6 +61,25 @@ const sessionSubNavBarItems: IconButtonProps[] = [
   },
 ];
 
+const settingsSubNavBarItems: IconButtonProps[] = [
+  {
+    id: "user",
+    name: "User",
+    icon: "/icons/search.svg",
+    showTooltip: false,
+    tooltipText: "User",
+    showName: false,
+  },
+  {
+    id: "userGroup",
+    name: "User Group",
+    icon: "/icons/search.svg",
+    showTooltip: false,
+    tooltipText: "User Group",
+    showName: false,
+  },
+];
+
 const initialState: SubNavBarState = {
   items: [],
   direction: "vertical",
@@ -68,6 +87,7 @@ const initialState: SubNavBarState = {
   selectedItemIndex: {
     location: 0,
     session: 0,
+    settings: 0,
   },
 };
 
@@ -95,6 +115,9 @@ export const subNavBarSlice = createSlice({
     setSessionSubNavBar: (state) => {
       state.items = sessionSubNavBarItems;
     },
+    setSettingsSubNavBar: (state) => {
+      state.items = settingsSubNavBarItems;
+    },
     setSelectedItemIndex: (
       state,
       action: PayloadAction<{ [key: string]: number } | undefined>
@@ -114,6 +137,7 @@ export const {
   setHoveredIndex,
   setLocationSubNavBar,
   setSessionSubNavBar,
+  setSettingsSubNavBar,
   setSelectedItemIndex,
 } = subNavBarSlice.actions;
 

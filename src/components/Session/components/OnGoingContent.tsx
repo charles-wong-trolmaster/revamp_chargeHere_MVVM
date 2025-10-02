@@ -1,23 +1,21 @@
 import React from "react";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface SessionSettingsContentProps {
   drawerId?: string;
 }
 
-const OnGoingContent: React.FC<SessionSettingsContentProps> = ({
-  drawerId = "onGoing",
-}) => {
-  const { openDrawer } = useDrawer();
+const OnGoingContent: React.FC<SessionSettingsContentProps> = () => {
+  const { openChild } = useDrawer();
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>On Going</h3>
       <p>Configure your session preferences and timeouts.</p>
       <p>Set session duration, auto-logout, and security preferences.</p>
-      <button onClick={() => openDrawer("onGoingDetail")}>
+      <button onClick={() => openChild("onGoingDetail")}>
         On Going Detail
       </button>
     </>

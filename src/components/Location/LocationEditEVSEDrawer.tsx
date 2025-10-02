@@ -13,7 +13,9 @@ const LocationDrawer: React.FC<LocationDrawerProps> = ({
 }) => {
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
-      <LocationEditEVSEContent drawerId={id} />
+      <LocationEditEVSEContent
+        evseFormOnSubmit={() => console.log("submit evse form")}
+      />
     </Drawer>
   );
 };

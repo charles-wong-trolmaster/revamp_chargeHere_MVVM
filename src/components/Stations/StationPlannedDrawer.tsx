@@ -1,21 +1,21 @@
 import React from "react";
 import Drawer from "../DrawerStack/Drawer";
-import TariffCreationDetailContent from "./components/TariffCreationDetailContent";
+import StationPlannedContent from "./components/StationPlannedContent";
 
 interface SessionDrawerProps {
   id: string;
   widthMultiplier?: number;
 }
 
-const TariffCreationDetailDrawer: React.FC<SessionDrawerProps> = ({
+const StationPlannedDrawer: React.FC<SessionDrawerProps> = ({
   id,
   widthMultiplier,
 }) => {
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
-      <TariffCreationDetailContent drawerId={id} />
+      <StationPlannedContent drawerId={id} />
     </Drawer>
   );
 };
 
-export default TariffCreationDetailDrawer;
+export default StationPlannedDrawer;

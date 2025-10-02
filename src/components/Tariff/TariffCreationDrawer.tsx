@@ -1,7 +1,8 @@
 import React from "react";
 import Drawer from "../DrawerStack/Drawer";
+import AddTariffAddSchemeDrawer from "./AddTariffAddSchemeDrawer";
+import AddTariffEditSchemeDrawer from "./AddTariffEditSchemeDrawer";
 import TariffCreationContent from "./components/TariffCreationContent";
-import TariffCreationDetailDrawer from "./TariffCreationDetailDrawer";
 
 interface SessionDrawerProps {
   id: string;
@@ -15,7 +16,8 @@ const TariffCreationDrawer: React.FC<SessionDrawerProps> = ({
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
       <TariffCreationContent drawerId={id} />
-      <TariffCreationDetailDrawer id={"tariffCreationDetail"} />
+      <AddTariffEditSchemeDrawer id="addTariffEditScheme" />
+      <AddTariffAddSchemeDrawer id="addTariffAddScheme" />
     </Drawer>
   );
 };

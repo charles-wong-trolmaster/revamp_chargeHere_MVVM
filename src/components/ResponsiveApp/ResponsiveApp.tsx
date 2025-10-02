@@ -12,7 +12,7 @@ const ResponsiveApp: React.FC = () => {
       <div className="uk-position-cover">
         <MapContainer />
       </div>
-      <div>
+      <div className="top">
         <SearchBarContainer />
       </div>
 
@@ -21,13 +21,13 @@ const ResponsiveApp: React.FC = () => {
           <DrawersContainer />
         </div>
 
-        <aside className="uk-position-small uk-position-center-right  ">
+        <div className="side">
           <SideNavbarContainier />
-        </aside>
+        </div>
       </div>
-      <footer className="uk-position-small uk-position-bottom-center  ">
+      <div className="bottom">
         <NavbarContainer />
-      </footer>
+      </div>
     </div>
   );
 };

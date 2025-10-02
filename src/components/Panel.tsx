@@ -43,7 +43,7 @@ const Panel: React.FC<PanelProps> = ({
               {/* background: rgba(0, 0, 0, 0.53) !important; */}
               {/* backdrop-filter: blur(9.7px); */}
 
-              <style jsx>{`
+              <style>{`
                 .uk-card {
                   color: white;
                   background: rgb(14, 1, 1) !important;

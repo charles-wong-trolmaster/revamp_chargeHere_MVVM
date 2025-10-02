@@ -48,6 +48,7 @@ const MapContainer: React.FC = () => {
       selectedIndex={selectedIndex}
       selectedStyle={selectedStyle}
       onBoundChange={onBoundChange}
+      boundFetchingTime={boundOnChangeDelay ?? 3000}
     />
   );
 };

@@ -1,8 +1,8 @@
 import React from "react";
 import Drawer from "../DrawerStack/Drawer";
 import LocationCreationContent from "./components/LocationCreationContent";
-import { useDrawer } from "../DrawerStack/DrawerStack";
 import { useCreateOneLocationMutation } from "@/redux/rtk-query/endpoints/admin/locations";
+import { useDrawer } from "@/hooks/useDrawer";
 import { Location } from "@/interfaces";
 
 interface LocationDrawerProps {
@@ -14,13 +14,13 @@ const LocationCreationDrawer: React.FC<LocationDrawerProps> = ({
   id,
   widthMultiplier,
 }) => {
-  const { closeDrawer } = useDrawer();
+  const { closeCurrent } = useDrawer();
   const [createLocation] = useCreateOneLocationMutation();
   const onSubmit = async (location: Location) => {
     await createLocation(location)
       .unwrap()
       .then(() => {
-        closeDrawer(id);
+        closeCurrent();
       })
       .catch((error) => console.error(error));
   };

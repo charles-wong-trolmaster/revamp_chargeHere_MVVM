@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useMemo, useRef } from "react";
-import { useDrawer } from "./DrawerStack";
+import React, { useContext, useEffect, useMemo } from "react";
+import { DrawerStackContext } from "./DrawerStackContext";
 
 // Types
 export interface DrawerProps {
@@ -9,68 +9,20 @@ export interface DrawerProps {
   children: React.ReactNode;
   onOpen?: () => void;
   onClose?: () => void;
-  onTransitionStart?: (isClosing: boolean) => void;
-  onTransitionEnd?: (isClosing: boolean) => void;
+  onOpenTransitionStart?: () => void;
+  onOpenTransitionEnd?: () => void;
+  onCloseTransitionStart?: () => void;
+  onCloseTransitionEnd?: () => void;
 }
 
-// Context
+// Context for child drawers
 export const DrawerContext = React.createContext<{
   parentPath: string;
   level: number;
 } | null>(null);
 
-// Helper function to deeply compare content
-const hasContentChanged = (
-  newContent: React.ReactNode[],
-  oldContent: React.ReactNode[]
-): boolean => {
-  if (newContent.length !== oldContent.length) {
-    return true;
-  }
-
-  return newContent.some((newItem, index) => {
-    const oldItem = oldContent[index];
-
-    // If references are the same, no change
-    if (newItem === oldItem) {
-      return false;
-    }
-
-    // If both are React elements, compare more deeply
-    if (React.isValidElement(newItem) && React.isValidElement(oldItem)) {
-      // Different component types
-      if (newItem.type !== oldItem.type) {
-        return true;
-      }
-
-      // Different keys
-      if (newItem.key !== oldItem.key) {
-        return true;
-      }
-
-      // Compare props (shallow comparison)
-      const newProps = newItem.props || {};
-      const oldProps = oldItem.props || {};
-      const newPropKeys = Object.keys(newProps);
-      const oldPropKeys = Object.keys(oldProps);
-
-      if (newPropKeys.length !== oldPropKeys.length) {
-        return true;
-      }
-
-      return newPropKeys.some((key) => {
-        // Skip children comparison to avoid infinite recursion
-        if (key === "children") {
-          return false;
-        }
-        return newProps[key] !== oldProps[key];
-      });
-    }
-
-    // For non-React elements, any difference means change
-    return true;
-  });
-};
+// NEW: Context for the current drawer's own path
+export const CurrentDrawerPathContext = React.createContext<string>("");
 
 // Main Component
 const Drawer: React.FC<DrawerProps> = ({
@@ -79,24 +31,26 @@ const Drawer: React.FC<DrawerProps> = ({
   children,
   onOpen,
   onClose,
-  onTransitionStart,
-  onTransitionEnd,
+  onOpenTransitionStart,
+  onOpenTransitionEnd,
+  onCloseTransitionStart,
+  onCloseTransitionEnd,
 }) => {
-  const { visibleDrawers, closingDrawers, registerDrawer, unregisterDrawer } =
-    useDrawer();
+  // Get context from DrawerStack
+  const stackContext = useContext(DrawerStackContext);
   const parentContext = useContext(DrawerContext);
+
+  if (!stackContext) {
+    throw new Error("Drawer must be used within a DrawerStack");
+  }
 
   // Path calculations
   const level = parentContext ? parentContext.level + 1 : 0;
   const fullPath = parentContext ? `${parentContext.parentPath}/${id}` : id;
 
-  // State tracking refs
-  const wasVisibleRef = useRef(false);
-  const wasClosingRef = useRef(false);
-  const lastContentRef = useRef<React.ReactNode[]>([]);
-  const lastWidthMultiplierRef = useRef(widthMultiplier);
-  const isRegisteredRef = useRef(false);
-  const updateCountRef = useRef(0);
+  // Destructure the context methods we need
+  const { registerDrawer, unregisterDrawer, visibleDrawers, closingDrawers } =
+    stackContext;
 
   // Visibility state
   const isVisible = visibleDrawers.has(fullPath);
@@ -109,19 +63,46 @@ const Drawer: React.FC<DrawerProps> = ({
 
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child)) {
+        // Debug logging for production
+        console.log(`🔍 [${fullPath}] Analyzing child:`, {
+          type: child.type,
+          typeName: (child.type as any)?.name,
+          displayName: (child.type as any)?.displayName,
+          props: child.props,
+        });
+
+        const isDirectDrawer = child.type === Drawer;
+
+        // Type-safe prop checking
+        const props = child.props as any;
+
+        // More aggressive detection - check for any component with id prop
+        const hasIdProp = props && typeof props.id === "string";
+
+        // Check displayName (works if you set it explicitly)
         const componentName =
           (child.type as any)?.displayName || (child.type as any)?.name || "";
-        const isDirectDrawer = child.type === Drawer;
-        const looksLikeDrawer = componentName.toLowerCase().includes("drawer");
+        const hasDrawerDisplayName = componentName
+          .toLowerCase()
+          .includes("drawer");
 
-        if (isDirectDrawer || looksLikeDrawer) {
-          const drawerProps = child.props as any;
-          if (drawerProps?.id) {
-            drawerChildren.push(child as React.ReactElement<DrawerProps>);
-          } else {
-            content.push(child);
-          }
+        // VERY permissive: treat ANY component with an id prop as a potential drawer
+        const isDrawerComponent =
+          isDirectDrawer || hasDrawerDisplayName || hasIdProp;
+
+        console.log(`🔍 [${fullPath}] Detection results:`, {
+          isDirectDrawer,
+          hasDrawerDisplayName,
+          hasIdProp,
+          isDrawerComponent,
+          componentName,
+        });
+
+        if (isDrawerComponent && props?.id) {
+          console.log(`✅ [${fullPath}] Treating as drawer child:`, props.id);
+          drawerChildren.push(child as React.ReactElement<DrawerProps>);
         } else {
+          console.log(`📄 [${fullPath}] Treating as content`);
           content.push(child);
         }
       } else {
@@ -129,10 +110,15 @@ const Drawer: React.FC<DrawerProps> = ({
       }
     });
 
-    return { drawerChildren, content };
-  }, [children]);
+    console.log(`📊 [${fullPath}] Final separation:`, {
+      drawerChildren: drawerChildren.map((c) => c.props.id),
+      contentCount: content.length,
+    });
 
-  // Context value
+    return { drawerChildren, content };
+  }, [children, fullPath]);
+
+  // Context value for child drawers
   const contextValue = useMemo(
     () => ({
       parentPath: fullPath,
@@ -141,58 +127,27 @@ const Drawer: React.FC<DrawerProps> = ({
     [fullPath, level]
   );
 
-  // Initial registration effect
+  // NEW: Wrap the content with the current drawer path context
+  const wrappedContent = useMemo(
+    () => (
+      <CurrentDrawerPathContext.Provider value={fullPath}>
+        {content}
+      </CurrentDrawerPathContext.Provider>
+    ),
+    [content, fullPath]
+  );
+
+  // Registration effect - use wrappedContent instead of content
   useEffect(() => {
-    if (!isRegisteredRef.current) {
-      registerDrawer(fullPath, content, widthMultiplier);
-      lastContentRef.current = [...content]; // Create a copy
-      lastWidthMultiplierRef.current = widthMultiplier;
-      isRegisteredRef.current = true;
-
-      if (id === "location") {
-        // Debug logging
-        console.log(`[${id}] Initial registration`);
-      }
-    }
-
-    return () => {
-      unregisterDrawer(fullPath);
-      isRegisteredRef.current = false;
-    };
+    registerDrawer(fullPath, wrappedContent, widthMultiplier);
+    return () => unregisterDrawer(fullPath);
   }, [
-    content,
     fullPath,
-    id,
+    wrappedContent,
+    widthMultiplier,
     registerDrawer,
     unregisterDrawer,
-    widthMultiplier,
   ]);
-
-  // Content update effect with throttling
-  useEffect(() => {
-    if (isRegisteredRef.current) {
-      const contentChanged = hasContentChanged(content, lastContentRef.current);
-      const widthChanged = widthMultiplier !== lastWidthMultiplierRef.current;
-
-      if (contentChanged || widthChanged) {
-        updateCountRef.current++;
-
-        if (id === "location") {
-          // Debug logging
-          console.log(`[${id}] Content update #${updateCountRef.current}`, {
-            contentChanged,
-            widthChanged,
-            contentLength: content.length,
-            lastContentLength: lastContentRef.current.length,
-          });
-        }
-
-        registerDrawer(fullPath, content, widthMultiplier);
-        lastContentRef.current = [...content]; // Create a copy
-        lastWidthMultiplierRef.current = widthMultiplier;
-      }
-    }
-  });
 
   // Lifecycle callbacks
   useEffect(() => {
@@ -207,30 +162,26 @@ const Drawer: React.FC<DrawerProps> = ({
     }
   }, [isClosing, onClose]);
 
-  // Transition start callback
+  // Transition callbacks (simplified - you can enhance these based on your animation system)
   useEffect(() => {
-    if ((isVisible || isClosing) && onTransitionStart) {
-      onTransitionStart(isClosing);
+    if (isVisible && !isClosing && onOpenTransitionStart) {
+      onOpenTransitionStart();
     }
-  }, [isVisible, isClosing, onTransitionStart]);
+    if (isVisible && !isClosing && onOpenTransitionEnd) {
+      // You might want to add a delay here based on your animation timing
+      const timer = setTimeout(() => onOpenTransitionEnd(), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, isClosing, onOpenTransitionStart, onOpenTransitionEnd]);
 
-  // Transition end callback
   useEffect(() => {
-    const wasVisible = wasVisibleRef.current;
-    const wasClosingState = wasClosingRef.current;
-
-    wasVisibleRef.current = isVisible;
-    wasClosingRef.current = isClosing;
-
-    const transitionEnded =
-      (!wasVisible && isVisible && !isClosing) ||
-      (wasClosingState && !isVisible && !isClosing);
-
-    if (transitionEnded && onTransitionEnd) {
-      const wasClosingTransition = wasClosingState && !isVisible;
-      onTransitionEnd(wasClosingTransition);
+    if (isClosing && onCloseTransitionStart) {
+      onCloseTransitionStart();
     }
-  }, [isVisible, isClosing, onTransitionEnd]);
+    if (!isVisible && !isClosing && onCloseTransitionEnd) {
+      onCloseTransitionEnd();
+    }
+  }, [isVisible, isClosing, onCloseTransitionStart, onCloseTransitionEnd]);
 
   return (
     <DrawerContext.Provider value={contextValue}>

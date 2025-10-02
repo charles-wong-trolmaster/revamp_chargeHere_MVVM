@@ -1,6 +1,6 @@
 import React from "react";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface SessionSettingsContentProps {
   drawerId?: string;
@@ -9,15 +9,15 @@ interface SessionSettingsContentProps {
 const CDRContent: React.FC<SessionSettingsContentProps> = ({
   drawerId = "CDR",
 }) => {
-  const { openDrawer } = useDrawer();
+  const { openChild } = useDrawer();
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>CDR Detail</h3>
       <p>Configure your session preferences and timeouts.</p>
       <p>Set session duration, auto-logout, and security preferences.</p>
-      <button onClick={() => openDrawer("CDRDetail")}>CDR Detail</button>
+      <button onClick={() => openChild("CDRDetail")}>CDR Detail</button>
     </>
   );
 };

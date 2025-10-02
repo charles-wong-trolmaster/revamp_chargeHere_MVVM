@@ -10,7 +10,7 @@ const StaitonEditConnectorContent: React.FC<SessionSettingsContentProps> = ({
 }) => {
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>Station Edit Connector</h3>
       <p>Configure your session preferences and timeouts.</p>
       <p>Set session duration, auto-logout, and security preferences.</p>

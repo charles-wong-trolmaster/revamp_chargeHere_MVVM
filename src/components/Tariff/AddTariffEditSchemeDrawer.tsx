@@ -1,21 +1,21 @@
 import React from "react";
 import Drawer from "../DrawerStack/Drawer";
-import TariffEditContent from "./components/TariffEditContent";
+import AddTariffEditSchemeContent from "./components/AddTariffEditSchemeContent";
 
 interface SessionHistoryDrawerProps {
   id: string;
   widthMultiplier?: number;
 }
 
-const TariffEditDrawer: React.FC<SessionHistoryDrawerProps> = ({
+const AddTariffEditSchemeDrawer: React.FC<SessionHistoryDrawerProps> = ({
   id,
   widthMultiplier,
 }) => {
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
-      <TariffEditContent drawerId={id} />
+      <AddTariffEditSchemeContent drawerId={id} />
     </Drawer>
   );
 };
 
-export default TariffEditDrawer;
+export default AddTariffEditSchemeDrawer;

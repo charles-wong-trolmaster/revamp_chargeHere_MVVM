@@ -501,7 +501,7 @@ const Map = (props: MapProps) => {
                   setLastProgrammaticId("");
                 }
 
-                isInitialLoad = false;
+                // isInitialLoad = false;
               }
             }, boundFetchingTime);
           };

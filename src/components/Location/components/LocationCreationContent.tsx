@@ -142,7 +142,7 @@ const LocationCreationContent: React.FC<LocationSettingsContentProps> = ({
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>Location Creation</h3>
       <div className="uk-height-1-1  uk-overflow-auto">
         <div className="uk-padding-small uk-flex uk-flex-column uk-flex-center">

@@ -6,9 +6,9 @@ import LocationEditDrawer from "./LocationEditDrawer";
 import LocationEVSEDrawer from "./LocationEVSEDrawer";
 import LocationPublishDrawer from "./LocationPublishDrawer";
 import { useAppSelector } from "@/redux/store";
-import { useDrawer } from "../DrawerStack/DrawerStack";
 import { useGetOneLocationQuery } from "@/redux/rtk-query/endpoints/admin/locations";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface LocationDrawerProps {
   id: string;
@@ -19,7 +19,7 @@ const LocationDetailDrawer: React.FC<LocationDrawerProps> = ({
   id,
   widthMultiplier,
 }) => {
-  const { openDrawer, closeDrawer } = useDrawer();
+  const { openChild, closeCurrent } = useDrawer();
   const selectedLocationId = useAppSelector(
     (state) => state.location.selectedLocationId
   );
@@ -35,19 +35,19 @@ const LocationDetailDrawer: React.FC<LocationDrawerProps> = ({
     console.log(selectedLocationId);
     console.log("location detail");
     console.log(locationDetail);
-    openDrawer("locationPublish");
+    openChild("publish");
   };
 
   const onItemEditLocation = () => {
-    openDrawer("locationEdit");
+    openChild("edit");
   };
 
   const onItemEVSE = () => {
-    openDrawer("locationEVSE");
+    openChild("EVSE");
   };
 
   const onItemGallery = () => {
-    openDrawer("locationGallery");
+    openChild("gallery");
   };
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
@@ -55,12 +55,12 @@ const LocationDetailDrawer: React.FC<LocationDrawerProps> = ({
         drawerId={id}
         title={"Location Detail"}
         itemDetail={locationDetail}
-        onClose={() => closeDrawer(id)}
+        onClose={() => closeCurrent()}
       />
-      <LocationGalleryDrawer id="locationGallery" />
-      <LocationEditDrawer id="locationEdit" />
-      <LocationEVSEDrawer id="locationEVSE" />
-      <LocationPublishDrawer id="locationPublish" />
+      <LocationGalleryDrawer id="gallery" />
+      <LocationEditDrawer id="edit" />
+      <LocationEVSEDrawer id="EVSE" />
+      <LocationPublishDrawer id="publish" />
     </Drawer>
   );
 };

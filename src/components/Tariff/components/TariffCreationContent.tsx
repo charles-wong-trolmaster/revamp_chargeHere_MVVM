@@ -1,6 +1,6 @@
 import React from "react";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface TariffCreationContentProps {
   drawerId: string;
@@ -9,24 +9,21 @@ interface TariffCreationContentProps {
 const TariffCreationContent: React.FC<TariffCreationContentProps> = ({
   drawerId,
 }) => {
-  const { openDrawer } = useDrawer();
+  const { openChild } = useDrawer();
 
-  const handleCreationDetailClick = () => {
-    console.log(
-      "🖱️ Tariff Creation Detail button clicked from TariffCreationContent"
-    );
-    console.log("📍 Current drawerId:", drawerId);
-    openDrawer("tariffCreationDetail");
-  };
+  openChild("tariffCreation");
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>Tariff Creation</h3>
       <p>Create and configure new tariff structures.</p>
       <p>Set pricing tiers, time-based rates, and discount policies.</p>
-      <button onClick={handleCreationDetailClick}>
-        Tariff Creation Detail
+      <button onClick={() => openChild("addTariffEditScheme")}>
+        Edit Scheme Drawer
+      </button>
+      <button onClick={() => openChild("addTariffAddScheme")}>
+        Add Scheme Drawer
       </button>
     </>
   );

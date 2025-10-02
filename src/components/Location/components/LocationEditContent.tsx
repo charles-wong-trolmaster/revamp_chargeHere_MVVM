@@ -1,10 +1,10 @@
 import React from "react";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
 import { FacilityEnum, Location, RegularHours } from "@/interfaces";
 import { useForm } from "react-hook-form";
 import AmenitiesIcon from "@/components/AmenitiesIcon";
 import GeoCodeAddressInput from "@/components/GeoCodeAddressInput";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface LocationSettingsContentProps {
   drawerId?: string;
@@ -21,7 +21,7 @@ const LocationEditContent: React.FC<LocationSettingsContentProps> = ({
   onSubmit,
   locationData,
 }) => {
-  const { openDrawer } = useDrawer();
+  const { openChild } = useDrawer();
   const {
     register,
     watch,
@@ -126,7 +126,7 @@ const LocationEditContent: React.FC<LocationSettingsContentProps> = ({
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>Location Edit</h3>
       <div className="uk-height-1-1 uk-overflow-auto">
         <div className="uk-padding-small uk-flex uk-flex-column uk-flex-center">

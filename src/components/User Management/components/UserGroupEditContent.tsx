@@ -10,7 +10,7 @@ const UserGroupEditContent: React.FC<SessionSettingsContentProps> = ({
 }) => {
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>User Group Edit</h3>
       <p>Configure your session preferences and timeouts.</p>
       <p>Set session duration, auto-logout, and security preferences.</p>

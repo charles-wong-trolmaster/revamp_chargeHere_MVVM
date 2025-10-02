@@ -2,7 +2,6 @@ import React from "react";
 import Drawer from "../DrawerStack/Drawer";
 import LocationEditContent from "./components/LocationEditContent";
 import LocationTariffDrawer from "./LocationTariffDrawer";
-import { useDrawer } from "../DrawerStack/DrawerStack";
 import {
   useUpdateOneLocationMutation,
   useGetOneLocationQuery,
@@ -10,13 +9,14 @@ import {
 import { useAppSelector } from "@/redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { FacilityEnum, Location } from "@/interfaces";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface LocationDrawerProps {
   id: string;
 }
 
 const LocationEditDrawer: React.FC<LocationDrawerProps> = ({ id }) => {
-  const { closeDrawer } = useDrawer();
+  const { closeCurrent } = useDrawer();
   const [updateLocation] = useUpdateOneLocationMutation();
   const selectedLocationId = useAppSelector(
     (state) => state.location.selectedLocationId
@@ -31,14 +31,14 @@ const LocationEditDrawer: React.FC<LocationDrawerProps> = ({ id }) => {
     await updateLocation(location)
       .unwrap()
       .then(() => {
-        closeDrawer(id);
+        closeCurrent();
       })
       .catch((error) => console.error(error));
   };
 
   return (
     <Drawer id={id}>
-      <LocationEditContent drawerId={id} />
+      <LocationEditContent />
       <LocationTariffDrawer id="locationTariff" />
     </Drawer>
   );

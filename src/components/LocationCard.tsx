@@ -207,7 +207,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
       )}
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         .uk-button:hover {
           background: rgba(255, 255, 255, 0.15) !important;
           transform: translateY(-1px);

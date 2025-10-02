@@ -9,6 +9,7 @@ import {
   setHoveredIndex,
   setSelectedItemIndex,
   setSessionSubNavBar,
+  setSettingsSubNavBar,
 } from "@/redux/features/subNavBar/subNavBarSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import React, { useEffect } from "react";
@@ -24,13 +25,10 @@ const SideNavbarContainier: React.FC = () => {
   const sessionSideNavbarSelectedIndex = useAppSelector(
     (state) => state.subNavBar.selectedItemIndex?.["session"]
   );
+  const settingSideNavbarSelectedIndex = useAppSelector(
+    (state) => state.subNavBar.selectedItemIndex?.["settings"]
+  );
 
-  console.log(
-    "locationSideNavbarSelectedIndex" + locationSideNavbarSelectedIndex
-  );
-  console.log(
-    "sessionSideNavbarSelectedIndex" + sessionSideNavbarSelectedIndex
-  );
   // Modified onSelect to accept the selected item and dispatch the style
   const locationItemOnSelect = (
     selectedItem: LocationSubNavBarIconButtonProps,
@@ -44,6 +42,10 @@ const SideNavbarContainier: React.FC = () => {
 
   const sessionOnSelect = (selectedItem: IconButtonProps, index: number) => {
     dispatch(setSelectedItemIndex({ session: index }));
+  };
+
+  const settingsOnSelect = (selectedItem: IconButtonProps, index: number) => {
+    dispatch(setSelectedItemIndex({ settings: index }));
   };
 
   const onSelect = (selectedItem: IconButtonProps, index: number) => {
@@ -83,6 +85,8 @@ const SideNavbarContainier: React.FC = () => {
       dispatch(setLocationSubNavBar());
     } else if (selectedNavBarItem && selectedNavBarItem.id === "session") {
       dispatch(setSessionSubNavBar());
+    } else if (selectedNavBarItem && selectedNavBarItem.id === "settings") {
+      dispatch(setSettingsSubNavBar());
     } else {
       dispatch(setItems([]));
     }
@@ -96,6 +100,8 @@ const SideNavbarContainier: React.FC = () => {
           ? locationItemOnSelect
           : selectedNavBarItem && selectedNavBarItem.id === "session"
           ? sessionOnSelect
+          : selectedNavBarItem && selectedNavBarItem.id === "settings"
+          ? settingsOnSelect
           : onSelect
       }
       items={items}
@@ -106,6 +112,8 @@ const SideNavbarContainier: React.FC = () => {
           ? locationSideNavbarSelectedIndex
           : selectedNavBarItem && selectedNavBarItem.id === "session"
           ? sessionSideNavbarSelectedIndex
+          : selectedNavBarItem && selectedNavBarItem.id === "settings"
+          ? settingSideNavbarSelectedIndex
           : undefined
       }
     />

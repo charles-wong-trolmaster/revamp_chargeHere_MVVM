@@ -1,22 +1,36 @@
-import React from 'react';
-import { useDrawer } from '../DrawerStack/DrawerStack';
+import { useDrawer } from "@/hooks/useDrawer";
+import React from "react";
 
 interface DrawerCloseButtonProps {
-	drawerId: string;
+  className?: string;
 }
 
-const DrawerCloseButton: React.FC<DrawerCloseButtonProps> = ({ drawerId }) => {
-	const { closeDrawer } = useDrawer();
+const DrawerCloseButton: React.FC<DrawerCloseButtonProps> = ({
+  className = "close",
+}) => {
+  const { closeCurrent, currentPath } = useDrawer();
 
-	const handleClose = () => {
-		closeDrawer(drawerId);
-	};
+  const handleClick = () => {
+    console.log("🔴 DrawerCloseButton clicked with path:", currentPath);
+    closeCurrent();
+  };
 
-	return (
-		<button className="close" onClick={handleClose}>
-			×
-		</button>
-	);
+  return (
+    <button
+      className={className}
+      onClick={handleClick}
+      style={{
+        background: "#dc3545",
+        color: "white",
+        border: "none",
+        padding: "4px 8px",
+        cursor: "pointer",
+        borderRadius: "3px",
+      }}
+    >
+      ×
+    </button>
+  );
 };
 
 export default DrawerCloseButton;

@@ -1,6 +1,6 @@
 import React from "react";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface SessionSettingsContentProps {
   drawerId?: string;
@@ -9,15 +9,15 @@ interface SessionSettingsContentProps {
 const UserGroupContent: React.FC<SessionSettingsContentProps> = ({
   drawerId = "userGroup",
 }) => {
-  const { openDrawer } = useDrawer();
+  const { openChild } = useDrawer();
 
   return (
     <>
-      <DrawerCloseButton drawerId={drawerId} />
+      <DrawerCloseButton />
       <h3>User Group</h3>
       <p>Configure your session preferences and timeouts.</p>
       <p>Set session duration, auto-logout, and security preferences.</p>
-      <button onClick={() => openDrawer("userGroupEdit")}>
+      <button onClick={() => openChild("userGroupEdit")}>
         User Group Edit
       </button>
     </>

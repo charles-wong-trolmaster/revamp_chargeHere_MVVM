@@ -3,11 +3,11 @@ import Drawer from "../DrawerStack/Drawer";
 import LocationContent from "./components/LocationContent";
 import LocationDetailDrawer from "./LocationDetailDrawer";
 import { useCreateOneLocationMutation } from "@/redux/rtk-query/endpoints/admin/locations";
-import { useDrawer } from "../DrawerStack/DrawerStack";
 import { useAppDispatch } from "@/redux/store";
 import useLocationItems from "@/hooks/useLocationItems";
 import { setSelectedLocationId } from "@/redux/features/location/locationSlice";
 import { Location } from "@/interfaces";
+import { useDrawer } from "@/hooks/useDrawer";
 
 interface LocationDrawerProps {
   id: string;
@@ -19,7 +19,7 @@ const LocationDrawer: React.FC<LocationDrawerProps> = ({
   widthMultiplier,
 }) => {
   const dispatch = useAppDispatch();
-  const { openDrawer, closeDrawer } = useDrawer();
+  const { openChild } = useDrawer();
   const {
     locationItems: items,
     isLoading,
@@ -37,7 +37,7 @@ const LocationDrawer: React.FC<LocationDrawerProps> = ({
     if (item.id) {
       dispatch(setSelectedLocationId(item.id));
     }
-    openDrawer("locationDetail");
+    openChild("detail");
   };
 
   // Memoize the close handler
@@ -58,7 +58,7 @@ const LocationDrawer: React.FC<LocationDrawerProps> = ({
         onClose={handleClose}
         onItemClick={handleItemClick}
       />
-      <LocationDetailDrawer id="locationDetail" />
+      <LocationDetailDrawer id="detail" />
     </Drawer>
   );
 };

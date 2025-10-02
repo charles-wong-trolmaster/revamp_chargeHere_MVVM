@@ -1,6 +1,4 @@
 import React from "react";
-import { useDrawer } from "../../DrawerStack/DrawerStack";
-import DrawerCloseButton from "../../Common/DrawerCloseButton";
 import LocationCard from "@/components/LocationCard";
 import { Location } from "@/interfaces";
 import Panel from "@/components/Panel";
