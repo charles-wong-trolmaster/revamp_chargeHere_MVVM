@@ -7,7 +7,7 @@ interface SessionDrawerProps {
   widthMultiplier?: number;
 }
 
-const UserGroupDrawer: React.FC<SessionDrawerProps> = ({
+const UserGroupResultListDrawer: React.FC<SessionDrawerProps> = ({
   id,
   widthMultiplier,
 }) => {
@@ -19,4 +19,4 @@ const UserGroupDrawer: React.FC<SessionDrawerProps> = ({
   );
 };
 
-export default UserGroupDrawer;
+export default UserGroupResultListDrawer;

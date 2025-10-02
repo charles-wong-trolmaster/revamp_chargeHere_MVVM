@@ -1,13 +1,24 @@
 import React from "react";
 import { useAppSelector } from "@/redux/store";
 import DrawerStack from "@/components/DrawerStack/DrawerStack";
-import { LocationDrawer } from "@/components/Location";
-import { LocationCreationDrawer } from "@/components/Location";
-import { CDRDrawer, OnGoingDrawer } from "@/components/Session";
-import { StationDrawer, StationEnrollmentDrawer } from "@/components/Stations";
-import { TariffDrawer } from "@/components/Tariff";
-import { UserDrawer, UserGroupDrawer } from "@/components/User Management";
 import { getSelectedNavItem } from "@/redux/features/navbar/navBarSlice";
+import {
+  ResultListDrawer as LocationResultListDrawer,
+  CreateDrawer as LocationCreateDrawer,
+} from "@/components/Location";
+import {
+  OnGoingResultListDrawer,
+  CDRResultListDrawer,
+} from "@/components/Session";
+import {
+  ResultListDrawer as StationResultListDrawer,
+  EnrollmentDrawer as StationEnrollmentDrawer,
+} from "@/components/Stations";
+import { ResultListDrawer as TariffResultListDrawer } from "@/components/Tariff";
+import {
+  UserGroupResultListDrawer,
+  UserResultListDrawer,
+} from "@/components/User Management";
 
 const DrawersContainer = () => {
   const selectedNavBarItem = useAppSelector(getSelectedNavItem);
@@ -40,15 +51,15 @@ const DrawersContainer = () => {
 
   return (
     <DrawerStack activeDrawer={activeSection()}>
-      <LocationDrawer id="location" />
-      <LocationCreationDrawer id="locationCreation" />
-      <OnGoingDrawer id="onGoing" />
-      <CDRDrawer id="CDR" />
-      <StationDrawer id="station" />
+      <LocationResultListDrawer id="location" />
+      <LocationCreateDrawer id="locationCreation" />
+      <OnGoingResultListDrawer id="onGoing" />
+      <CDRResultListDrawer id="CDR" />
+      <StationResultListDrawer id="station" />
       <StationEnrollmentDrawer id="stationEnrollment" />
-      <TariffDrawer id="tariff" />
-      <UserDrawer id="user" />
-      <UserGroupDrawer id="userGroup" />
+      <TariffResultListDrawer id="tariff" />
+      <UserResultListDrawer id="user" />
+      <UserGroupResultListDrawer id="userGroup" />
     </DrawerStack>
   );
 };

@@ -7,7 +7,7 @@ interface SessionHistoryDrawerProps {
   widthMultiplier?: number;
 }
 
-const UserGroupEditDrawer: React.FC<SessionHistoryDrawerProps> = ({
+const EditUserGroupDrawer: React.FC<SessionHistoryDrawerProps> = ({
   id,
   widthMultiplier,
 }) => {
@@ -18,4 +18,4 @@ const UserGroupEditDrawer: React.FC<SessionHistoryDrawerProps> = ({
   );
 };
 
-export default UserGroupEditDrawer;
+export default EditUserGroupDrawer;

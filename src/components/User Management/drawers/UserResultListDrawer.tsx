@@ -8,7 +8,10 @@ interface SessionDrawerProps {
   widthMultiplier?: number;
 }
 
-const UserDrawer: React.FC<SessionDrawerProps> = ({ id, widthMultiplier }) => {
+const UserResultListDrawer: React.FC<SessionDrawerProps> = ({
+  id,
+  widthMultiplier,
+}) => {
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
       <UserResultList drawerId={id} />
@@ -17,4 +20,4 @@ const UserDrawer: React.FC<SessionDrawerProps> = ({ id, widthMultiplier }) => {
   );
 };
 
-export default UserDrawer;
+export default UserResultListDrawer;
