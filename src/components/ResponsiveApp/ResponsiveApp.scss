@@ -58,6 +58,7 @@ $primary-text-color: white;
   width: viewport-width();
   height: viewport-height();
   overflow: hidden;
+  
 }
 
 .top {
@@ -91,8 +92,8 @@ $primary-text-color: white;
   color: $primary-text-color;
   display: flex;
   align-items: center;
-  justify-content: center;
-  writing-mode: vertical-rl;
+  // justify-content: center;
+  // writing-mode: vertical-rl;
   text-orientation: mixed;
   width: side-width();
   font-size: calc(#{viewport-height()} * #{$side-font-size-ratio});
@@ -103,7 +104,7 @@ $primary-text-color: white;
   color: $primary-text-color;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Changed to space-between */
+  justify-content: center; /* Changed to space-between */
   padding: 0 calc(#{viewport-height()} * 0.02); /* Added padding */
   height: calc(#{viewport-height()} * #{$bottom-section-ratio});
   font-size: calc(#{viewport-height()} * #{$bottom-font-size-ratio});
