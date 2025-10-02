@@ -29,8 +29,6 @@ const LocationDetailDrawer: React.FC<DrawerProps> = ({
   onGalleryClick,
   // onGetDirectionsClick,
 }) => {
-  console.log("qqq itemDetail", itemDetail);
-
   const handleEvseClick = (evseUid: string) => {
     console.log("EVSE clicked:", evseUid);
     // Your logic here, e.g.:
@@ -238,7 +236,6 @@ const LocationDetailDrawer: React.FC<DrawerProps> = ({
       </>
     );
   };
-
   return (
     <Panel
       isOpen={true}

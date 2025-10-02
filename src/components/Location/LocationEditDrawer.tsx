@@ -9,6 +9,7 @@ import {
 } from "@/redux/rtk-query/endpoints/admin/locations";
 import { useAppSelector } from "@/redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { FacilityEnum, Location } from "@/interfaces";
 
 interface LocationDrawerProps {
   id: string;
@@ -34,6 +35,7 @@ const LocationEditDrawer: React.FC<LocationDrawerProps> = ({ id }) => {
       })
       .catch((error) => console.error(error));
   };
+
   return (
     <Drawer id={id}>
       <LocationEditContent drawerId={id} />

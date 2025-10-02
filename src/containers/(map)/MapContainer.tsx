@@ -28,11 +28,11 @@ const MapContainer: React.FC = () => {
     console.log(coordinate);
   };
   const onMapClick = (coordinate: { lat: number; lng: number }) => {
-    console.log("qqq map click", coordinate);
+    console.log(coordinate);
   };
 
   const onBoundChange = (bound: Bound) => {
-    console.log("qqq bound", bound);
+    console.log(bound);
 
     dispatch(setBound(bound));
   };

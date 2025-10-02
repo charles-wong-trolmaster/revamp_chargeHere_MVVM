@@ -32,7 +32,6 @@ const LocationDetailContent = (props: LocationSettingsContentProps) => {
     onGalleryClick,
     // onGetDirectionsClick,
   } = props;
-  console.log("qqq itemDetail", itemDetail);
 
   const handleEvseClick = (evseUid: string) => {
     console.log("EVSE clicked:", evseUid);

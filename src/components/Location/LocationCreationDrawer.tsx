@@ -3,6 +3,7 @@ import Drawer from "../DrawerStack/Drawer";
 import LocationCreationContent from "./components/LocationCreationContent";
 import { useDrawer } from "../DrawerStack/DrawerStack";
 import { useCreateOneLocationMutation } from "@/redux/rtk-query/endpoints/admin/locations";
+import { Location } from "@/interfaces";
 
 interface LocationDrawerProps {
   id: string;
@@ -23,6 +24,7 @@ const LocationCreationDrawer: React.FC<LocationDrawerProps> = ({
       })
       .catch((error) => console.error(error));
   };
+
   return (
     <Drawer id={id} widthMultiplier={widthMultiplier}>
       <LocationCreationContent drawerId={id} />
