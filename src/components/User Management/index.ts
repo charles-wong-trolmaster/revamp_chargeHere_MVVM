@@ -1,4 +1,4 @@
-export { default as UserDrawer } from "./UserDrawer";
-export { default as UserGroupDrawer } from "./UserGroupDrawer";
-export { default as UserEditDrawer } from "./UserEditDrawer";
-export { default as UserGroupEditDrawer } from "./UserGroupEditDrawer";
+export { default as EditUserDrawer } from "./drawers/EditUserDrawer";
+export { default as EditUserGroupDrawer } from "./drawers/EditUserGroupDrawer";
+export { default as UserGroupResultListDrawer } from "./drawers/UserGroupResultListDrawer";
+export { default as UserResultListDrawer } from "./drawers/UserResultListDrawer";
