@@ -39,10 +39,7 @@ const SearchBar = (props: SearchBarProps) => {
   };
 
   return (
-    <header
-      className="uk-background-muted uk-padding-small uk-flex-none"
-      style={{ background: "lightyellow" }}
-    >
+    <header className="uk-background-muted uk-padding-small uk-flex-none">
       <div className="uk-container uk-text-center">
         <form onSubmit={handleSubmit} className="uk-search uk-search-default">
           <div className="uk-inline uk-width-1-1">
