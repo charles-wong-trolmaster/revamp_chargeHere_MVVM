@@ -121,7 +121,6 @@ const Edit: React.FC<LocationSettingsContentProps> = ({
     if (onSubmit) {
       onSubmit(data);
     }
-    console.log("qqq Form submitted:", data);
   };
 
   return (

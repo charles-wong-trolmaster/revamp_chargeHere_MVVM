@@ -6,33 +6,27 @@ import AvailabilityButton from "@/components/AvailabilityButton";
 import AmenitiesList from "@/components/AmenitiesList";
 import TariffTypesExpander from "@/components/TariffTypesExpander";
 import PricingExpandedContent from "@/components/PricingExpander";
-import { desc } from "framer-motion/client";
 
 interface LocationSettingsContentProps {
-  drawerId?: string;
-  title: string;
   itemDetail: any;
   onClose: () => void;
-  onItemClick?: () => void;
   onAvailabilityClick?: () => void;
   onEditLocationClick?: () => void;
   onGalleryClick?: () => void;
   onGetDirectionsClick?: () => void;
+  onEvseClick?: (evseUid: string, itemDetail: any) => void;
 }
 
 const Details = (props: LocationSettingsContentProps) => {
   const {
-    drawerId = "locationDetail",
-    title,
     itemDetail,
     onClose,
-    // onItemClick,
     onAvailabilityClick,
     onEditLocationClick,
     onGalleryClick,
-    // onGetDirectionsClick,
+    onEvseClick,
+    onGetDirectionsClick,
   } = props;
-  console.log("qqq itemDetail", itemDetail);
 
   const RateTypesDefinition = [
     {
@@ -315,8 +309,10 @@ const Details = (props: LocationSettingsContentProps) => {
     },
   ];
 
-  const handleEvseClick = (evseUid: string) => {
-    console.log("EVSE clicked:", evseUid);
+  const handleEvseClick = (evseUid: string, itemDetail: any) => {
+    if (onEvseClick) {
+      onEvseClick(evseUid, itemDetail);
+    }
   };
   const getStatusLabel = useCallback((status: StatusEnum): string => {
     switch (status) {
@@ -339,7 +335,7 @@ const Details = (props: LocationSettingsContentProps) => {
     <>
       <DrawerCloseButton />
       <h3>Location Detail</h3>
-      <div className="  uk-overflow-auto">
+      <div className="uk-overflow-auto">
         <div className="">
           {/* Image Section */}
           <div className="uk-flex uk-flex-center uk-flex-middle uk-overflow-hidden uk-position-relative">
@@ -408,7 +404,7 @@ const Details = (props: LocationSettingsContentProps) => {
             <EVSEsStatusBox
               locationDetail={itemDetail}
               onEvseClick={(evseUid) => {
-                handleEvseClick(evseUid);
+                handleEvseClick(evseUid, itemDetail);
               }}
               getStatusLabel={getStatusLabel}
             />
@@ -445,6 +441,7 @@ const Details = (props: LocationSettingsContentProps) => {
 
               {RateTypesDefinition.map((rateType) => (
                 <TariffTypesExpander
+                  key={rateType.title}
                   title={rateType.title}
                   badge={rateType.badge}
                   description={rateType.description}
@@ -456,8 +453,9 @@ const Details = (props: LocationSettingsContentProps) => {
                 />
               ))}
               {PricingDummy.length > 0 &&
-                PricingDummy.map((pricing) => (
+                PricingDummy.map((pricing, index) => (
                   <PricingExpandedContent
+                    key={index}
                     name={pricing.name}
                     validStart={pricing.validStart}
                     validEnd={pricing.validEnd}
@@ -466,6 +464,16 @@ const Details = (props: LocationSettingsContentProps) => {
                     fee={pricing.fee}
                   />
                 ))}
+            </div>
+
+            {/* Get Directions Button - Added at the bottom */}
+            <div className="uk-margin-top uk-margin-bottom">
+              <button
+                className="uk-button uk-button-primary uk-width-1-1 uk-border-rounded"
+                onClick={onGetDirectionsClick}
+              >
+                <span>Get Directions</span>
+              </button>
             </div>
           </div>
         </div>
