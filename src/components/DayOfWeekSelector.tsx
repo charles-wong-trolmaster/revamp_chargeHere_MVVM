@@ -1,13 +1,13 @@
 import React from "react";
 import { DayOfWeekEnum } from "@/interfaces/common.type";
-import { styles } from "@/styles/layer 1/layer 2/layer 3/layer 4/serviceStartupPenaltySchemePanelStyles";
+import { styles } from "@/styles/(layer 1)/serviceStartupPenaltySchemePanelStyles";
 
 interface DayOfWeekSelectorProps {
   selectedDays?: DayOfWeekEnum[];
   onChange: (selectedDays: DayOfWeekEnum[]) => void;
   disabled?: boolean;
   containerStyle?: React.CSSProperties;
-  showQuickSelect?: boolean;
+  // showQuickSelect?: boolean;
   showIndividualSelect?: boolean;
   label?: string;
 }
@@ -17,49 +17,49 @@ const DayOfWeekSelector: React.FC<DayOfWeekSelectorProps> = ({
   onChange,
   disabled = false,
   containerStyle = { marginTop: "15px" },
-  showQuickSelect = true,
+  // showQuickSelect = true,
   showIndividualSelect = true,
   label = "Days of Week:",
 }) => {
-  const selectWeekdays = () => {
-    if (disabled) return;
-    const weekdays: DayOfWeekEnum[] = [
-      DayOfWeekEnum.MONDAY,
-      DayOfWeekEnum.TUESDAY,
-      DayOfWeekEnum.WEDNESDAY,
-      DayOfWeekEnum.THURSDAY,
-      DayOfWeekEnum.FRIDAY,
-    ];
-    onChange(weekdays);
-  };
+  // const selectWeekdays = () => {
+  //   if (disabled) return;
+  //   const weekdays: DayOfWeekEnum[] = [
+  //     DayOfWeekEnum.MONDAY,
+  //     DayOfWeekEnum.TUESDAY,
+  //     DayOfWeekEnum.WEDNESDAY,
+  //     DayOfWeekEnum.THURSDAY,
+  //     DayOfWeekEnum.FRIDAY,
+  //   ];
+  //   onChange(weekdays);
+  // };
 
-  const selectWeekend = () => {
-    if (disabled) return;
-    const weekend: DayOfWeekEnum[] = [
-      DayOfWeekEnum.SATURDAY,
-      DayOfWeekEnum.SUNDAY,
-    ];
-    onChange(weekend);
-  };
+  // const selectWeekend = () => {
+  //   if (disabled) return;
+  //   const weekend: DayOfWeekEnum[] = [
+  //     DayOfWeekEnum.SATURDAY,
+  //     DayOfWeekEnum.SUNDAY,
+  //   ];
+  //   onChange(weekend);
+  // };
 
-  const selectAllDays = () => {
-    if (disabled) return;
-    const allDays: DayOfWeekEnum[] = [
-      DayOfWeekEnum.MONDAY,
-      DayOfWeekEnum.TUESDAY,
-      DayOfWeekEnum.WEDNESDAY,
-      DayOfWeekEnum.THURSDAY,
-      DayOfWeekEnum.FRIDAY,
-      DayOfWeekEnum.SATURDAY,
-      DayOfWeekEnum.SUNDAY,
-    ];
-    onChange(allDays);
-  };
+  // const selectAllDays = () => {
+  //   if (disabled) return;
+  //   const allDays: DayOfWeekEnum[] = [
+  //     DayOfWeekEnum.MONDAY,
+  //     DayOfWeekEnum.TUESDAY,
+  //     DayOfWeekEnum.WEDNESDAY,
+  //     DayOfWeekEnum.THURSDAY,
+  //     DayOfWeekEnum.FRIDAY,
+  //     DayOfWeekEnum.SATURDAY,
+  //     DayOfWeekEnum.SUNDAY,
+  //   ];
+  //   onChange(allDays);
+  // };
 
-  const selectNoDays = () => {
-    if (disabled) return;
-    onChange([]);
-  };
+  // const selectNoDays = () => {
+  //   if (disabled) return;
+  //   onChange([]);
+  // };
 
   const handleDayChange = (day: DayOfWeekEnum) => {
     if (disabled) return;
@@ -110,7 +110,7 @@ const DayOfWeekSelector: React.FC<DayOfWeekSelectorProps> = ({
 
       {showIndividualSelect && (
         <div style={{ ...styles.daySelector, gap: "6px" }}>
-          {dayConfigs.map(({ day, label, isWeekend }) => (
+          {dayConfigs.map(({ day, label }) => (
             <button
               key={day}
               style={getDayButtonStyle(selectedDays.includes(day))}

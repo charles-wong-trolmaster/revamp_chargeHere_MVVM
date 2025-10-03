@@ -15,10 +15,10 @@ import {
   TimeRateFeeWithGracePeriod,
   TimeTier,
 } from "@/entities";
-import { styles } from "@/styles/(layer 1)/SchemeDetailPanel";
 import TimePicker from "./TimePicker";
 import DayPicker from "./DayPicker";
 import DayOfWeekSelector from "./DayOfWeekSelector";
+import { styles } from "@/styles/(layer 1)/SchemeDetailPanel";
 
 interface SchemeDetailFormProps {
   displayMode?: boolean;

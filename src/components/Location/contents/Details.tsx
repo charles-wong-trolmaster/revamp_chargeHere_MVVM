@@ -27,6 +27,7 @@ const Details = (props: LocationSettingsContentProps) => {
     onEvseClick,
     onGetDirectionsClick,
   } = props;
+  console.log("qqq itemDetail", itemDetail);
 
   const RateTypesDefinition = [
     {
