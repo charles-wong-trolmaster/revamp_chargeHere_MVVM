@@ -82,7 +82,7 @@ const DayOfWeekSelector: React.FC<DayOfWeekSelectorProps> = ({
   ];
 
   const getDayButtonStyle = (isSelected: boolean): React.CSSProperties => {
-    const baseColor = "#4CAF50"; // Green for weekends, gray for weekdays
+    const baseColor = "#4CAF50";
 
     return {
       backgroundColor: isSelected ? baseColor : "transparent",
