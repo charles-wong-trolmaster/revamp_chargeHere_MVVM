@@ -1,9 +1,8 @@
-import React, { useCallback, useState, useRef, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
 import { useDrawer } from "@/hooks/useDrawer";
 
 interface TariffContentProps {
-  drawerId: string;
   onItemClick?: (tariff_id: string) => void;
   onAddTariff?: () => void;
   tariffDataList?: { id: string; name: string }[];
@@ -39,26 +38,26 @@ const ResultList = (props: TariffContentProps) => {
     [onScrollToBottom]
   );
 
-  const tariffDummyDataList = [
-    { id: "00001", name: "Kenneth's dog" },
-    { id: "00002", name: "Kenneth's dog" },
-    { id: "00003", name: "Kenneth's dog" },
-    { id: "00004", name: "Kenneth's dog" },
-    { id: "00005", name: "Kenneth's dog" },
-    { id: "00006", name: "Kenneth's dog" },
-    { id: "00007", name: "Kenneth's dog" },
-    { id: "00008", name: "Kenneth's dog" },
-    { id: "00009", name: "Kenneth's dog" },
-    { id: "00010", name: "Kenneth's dog" },
-    { id: "00011", name: "Kenneth's dog" },
-    { id: "00012", name: "Kenneth's dog" },
-    { id: "00013", name: "Kenneth's dog" },
-    { id: "00014", name: "Kenneth's dog" },
-    { id: "00015", name: "Kenneth's dog" },
-    { id: "00016", name: "Kenneth's dog" },
-    { id: "00017", name: "Kenneth's dog" },
-    { id: "00018", name: "Kenneth's dog" },
-  ];
+  // const tariffDummyDataList = [
+  //   { id: "00001", name: "Kenneth's dog" },
+  //   { id: "00002", name: "Kenneth's dog" },
+  //   { id: "00003", name: "Kenneth's dog" },
+  //   { id: "00004", name: "Kenneth's dog" },
+  //   { id: "00005", name: "Kenneth's dog" },
+  //   { id: "00006", name: "Kenneth's dog" },
+  //   { id: "00007", name: "Kenneth's dog" },
+  //   { id: "00008", name: "Kenneth's dog" },
+  //   { id: "00009", name: "Kenneth's dog" },
+  //   { id: "00010", name: "Kenneth's dog" },
+  //   { id: "00011", name: "Kenneth's dog" },
+  //   { id: "00012", name: "Kenneth's dog" },
+  //   { id: "00013", name: "Kenneth's dog" },
+  //   { id: "00014", name: "Kenneth's dog" },
+  //   { id: "00015", name: "Kenneth's dog" },
+  //   { id: "00016", name: "Kenneth's dog" },
+  //   { id: "00017", name: "Kenneth's dog" },
+  //   { id: "00018", name: "Kenneth's dog" },
+  // ];
 
   return (
     <>
@@ -74,9 +73,9 @@ const ResultList = (props: TariffContentProps) => {
         >
           +
         </button>
-        {tariffDummyDataList &&
-          tariffDummyDataList.length > 0 &&
-          tariffDummyDataList.map((tariff, index) => (
+        {tariffDataList &&
+          tariffDataList.length > 0 &&
+          tariffDataList.map((tariff, index) => (
             <button
               key={`${tariff.id}-${index}`}
               onClick={() => handleClickTariff(tariff.id)}

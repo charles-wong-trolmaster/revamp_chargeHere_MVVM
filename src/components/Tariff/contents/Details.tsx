@@ -4,7 +4,6 @@ import { useDrawer } from "@/hooks/useDrawer";
 import { ITariff, Scheme, Tariff } from "@/entities";
 
 interface SessionSettingsContentProps {
-  drawerId?: string;
   tariffId?: string;
   initialData?: ITariff;
   onCancelClick?: () => void;
@@ -16,7 +15,6 @@ interface SessionSettingsContentProps {
 
 const Details = (props: SessionSettingsContentProps) => {
   const {
-    drawerId,
     initialData,
     tariffId,
     onCancelClick,

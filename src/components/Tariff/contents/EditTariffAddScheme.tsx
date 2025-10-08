@@ -4,7 +4,6 @@ import SchemeDetailForm from "@/components/SchemeDetailForm";
 import { Scheme } from "@/entities";
 
 interface SessionSettingsContentProps {
-  drawerId?: string;
   displayMode?: boolean;
   // scheme?: Scheme;
   onSave?: (scheme: Scheme) => void;

@@ -7,7 +7,6 @@ interface TariffFormData {
   description: string;
 }
 interface TariffCreationContentProps {
-  drawerId: string;
   onCreateClick?: (data: TariffFormData) => void;
   onCancelClick?: () => void;
 }
