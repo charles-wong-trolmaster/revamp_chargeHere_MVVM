@@ -6,14 +6,12 @@ import GeoCodeAddressInput from "@/components/GeoCodeAddressInput";
 import AmenitiesIcon from "@/components/AmenitiesIcon";
 
 interface LocationSettingsContentProps {
-  drawerId?: string;
   title?: string;
   onClose?: () => void;
   onSubmit?: (data: Location) => void;
 }
 
 const Create: React.FC<LocationSettingsContentProps> = ({
-  drawerId = "locationCreation",
   title,
   onClose,
   onSubmit,
