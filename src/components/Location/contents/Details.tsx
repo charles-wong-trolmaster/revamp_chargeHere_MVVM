@@ -5,7 +5,7 @@ import { StatusEnum } from "@/interfaces";
 import AvailabilityButton from "@/components/AvailabilityButton";
 import AmenitiesList from "@/components/AmenitiesList";
 import TariffTypesExpander from "@/components/TariffTypesExpander";
-import PricingExpandedContent from "@/components/PricingExpander";
+import PricingExpander from "@/components/PricingExpander";
 
 interface LocationSettingsContentProps {
   itemDetail: any;
@@ -455,7 +455,7 @@ const Details = (props: LocationSettingsContentProps) => {
               ))}
               {PricingDummy.length > 0 &&
                 PricingDummy.map((pricing, index) => (
-                  <PricingExpandedContent
+                  <PricingExpander
                     key={index}
                     name={pricing.name}
                     validStart={pricing.validStart}
