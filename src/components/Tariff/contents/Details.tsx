@@ -8,7 +8,7 @@ interface SessionSettingsContentProps {
   tariffId?: string;
   initialData?: ITariff;
   onCancelClick?: () => void;
-  onUpdateTariffClick?: () => void;
+  onUpdateTariffClick?: (editingTariff: Tariff) => void;
   onDeleteTariffClick?: () => void;
   onSchemeListAddClick?: () => void;
   onSchemeItemClick?: (scheme: Scheme, index: number) => void;
@@ -40,6 +40,7 @@ const Details = (props: SessionSettingsContentProps) => {
       Date.now().toLocaleString()
     )
   );
+  console.log("qqq editingTariff", editingTariff);
 
   // const [replaceTariff] = useReplaceOneTariffMutation();
   // const [deleteTariff] = useDeleteOneTariffMutation();
@@ -69,9 +70,11 @@ const Details = (props: SessionSettingsContentProps) => {
   //     .finally(() => schemeListPanel.close());
   // };
 
-  const handleUpdateTariff = async () => {
+  const handleUpdateTariff = async (editingTariff: Tariff) => {
+    console.log("qqq update editingTariff", editingTariff);
+
     if (onUpdateTariffClick) {
-      onUpdateTariffClick();
+      onUpdateTariffClick(editingTariff);
     }
     // replaceTariff({ id: tariffId, payload: editingTariff?.toObject() })
     //   .unwrap()
@@ -117,7 +120,7 @@ const Details = (props: SessionSettingsContentProps) => {
               className="uk-input uk-form-width-large uk-background-muted uk-light"
               onChange={(e) => {
                 const cloned = Tariff.fromObject(editingTariff.toObject());
-                cloned.name = e.value;
+                cloned.name = e.target.value;
                 setEditingTariff(cloned);
               }}
             />
@@ -131,7 +134,7 @@ const Details = (props: SessionSettingsContentProps) => {
               className="uk-input uk-form-width-large uk-background-muted uk-light"
               onChange={(e) => {
                 const cloned = Tariff.fromObject(editingTariff.toObject());
-                cloned.description = e.value;
+                cloned.description = e.target.value;
                 setEditingTariff(cloned);
               }}
             />
@@ -220,7 +223,7 @@ const Details = (props: SessionSettingsContentProps) => {
         <div>
           <button
             className="uk-button uk-button-primary uk-button-small"
-            onClick={() => handleUpdateTariff()}
+            onClick={() => handleUpdateTariff(editingTariff)}
           >
             Update
           </button>
