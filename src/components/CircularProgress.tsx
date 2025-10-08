@@ -63,18 +63,16 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
 
       case "time": {
         let progressPercentage = 0;
-
         if (totalDuration && totalDuration > 0) {
           // Make sure value doesn't exceed totalDuration
           const remainingTime = Math.min(value, totalDuration);
           const elapsedTime = totalDuration - remainingTime;
           progressPercentage = (elapsedTime / totalDuration) * 100;
         }
-
         return {
           primaryText: formatTime(value),
           secondaryText: secondaryText || "Remaining",
-          progressValue: Math.max(0, Math.min(100, progressPercentage)), // Clamp between 0-100
+          progressValue: Math.max(0, Math.min(100, progressPercentage)),
           maxValue: 100,
           icon: "⏰",
         };
@@ -138,7 +136,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
 
   return (
     <div
-      className={`circular-progress ${className}`} // Use string literals instead of styles.circularProgress
+      className={`circular-progress ${className}`}
       style={{ width: size, height: size }}
     >
       <svg width={size} height={size} className="circular-progress__svg">

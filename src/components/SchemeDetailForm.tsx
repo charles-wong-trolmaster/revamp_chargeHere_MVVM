@@ -130,6 +130,7 @@ const SchemeDetailForm: React.FC<SchemeDetailFormProps> = ({
     resetForm();
     if (onClose) {
       resetForm();
+
       onClose();
     }
   };

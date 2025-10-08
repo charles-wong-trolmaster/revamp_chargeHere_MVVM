@@ -2,11 +2,11 @@ import React, { useState } from "react";
 
 export interface PricingExpandedContentProps {
   className?: string;
-  name: string;
-  validStart: string;
-  validEnd: string;
-  activeHours: string;
-  validDays: string[];
+  name?: string;
+  validStart?: string;
+  validEnd?: string;
+  activeHours?: string;
+  validDays?: string[];
   fee: {
     name: string;
     originFee?: {
@@ -29,6 +29,11 @@ export interface PricingExpandedContentProps {
       remark?: string;
     }[];
   }[];
+  // Add these props to control what gets rendered
+  showHeader?: boolean;
+  showValidPeriod?: boolean;
+  showActiveHours?: boolean;
+  showValidDays?: boolean;
 }
 
 const PricingExpander: React.FC<PricingExpandedContentProps> = ({
@@ -39,6 +44,10 @@ const PricingExpander: React.FC<PricingExpandedContentProps> = ({
   validDays,
   fee,
   className = "",
+  showHeader = true,
+  showValidPeriod = true,
+  showActiveHours = true,
+  showValidDays = true,
 }) => {
   // State to track which fee categories are expanded
   const [expandedCategories, setExpandedCategories] = useState<{
@@ -80,42 +89,50 @@ const PricingExpander: React.FC<PricingExpandedContentProps> = ({
   };
 
   return (
-    <div className={`uk-margin-remove ${className}`}>
-      {/* Header Section */}
-      <div className="">
-        <h3 className="uk-text-white uk-margin-remove">{name}</h3>
+    <div className={`uk-margin-remove ${className} uk-width-1-1 `}>
+      {/* Header Section - Only render if showHeader is true */}
+      {showHeader && (
+        <div className="">
+          {name && <h3 className="uk-text-white uk-margin-remove">{name}</h3>}
 
-        <div className="" uk-grid="">
-          <div className="uk-width-1-2">
-            <div className="uk-card">Valid Period</div>
-          </div>
-          <div className="uk-width-1-2">
-            <div className="uk-card">
-              {formatDateRange(validStart, validEnd)}
+          {showValidPeriod && validStart && validEnd && (
+            <div className="" uk-grid="">
+              <div className="uk-width-1-2">
+                <div className="uk-card">Valid Period</div>
+              </div>
+              <div className="uk-width-1-2">
+                <div className="uk-card">
+                  {formatDateRange(validStart, validEnd)}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
 
-        <div className="" uk-grid="">
-          <div className="uk-width-1-2">
-            <div className="uk-card">Active Hours</div>
-          </div>
-          <div className="uk-width-1-2">
-            <div className="uk-card">{activeHours}</div>
-          </div>
-        </div>
+          {showActiveHours && activeHours && (
+            <div className="" uk-grid="">
+              <div className="uk-width-1-2">
+                <div className="uk-card">Active Hours</div>
+              </div>
+              <div className="uk-width-1-2">
+                <div className="uk-card">{activeHours}</div>
+              </div>
+            </div>
+          )}
 
-        <div className="" uk-grid="">
-          <div className="uk-width-1-2">
-            <div className="uk-card">Valid Days</div>
-          </div>
-          <div className="uk-width-1-2">
-            <div className="uk-card">{formatValidDays(validDays)}</div>
-          </div>
+          {showValidDays && validDays && (
+            <div className="" uk-grid="">
+              <div className="uk-width-1-2">
+                <div className="uk-card">Valid Days</div>
+              </div>
+              <div className="uk-width-1-2">
+                <div className="uk-card">{formatValidDays(validDays)}</div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
-      {/* Fees Section */}
+      {/* Fees Section - This will always render */}
       <div className="uk-card-body uk-padding-remove">
         {fee.map((feeCategory, categoryIndex) => {
           const isCategoryExpanded = expandedCategories[categoryIndex];

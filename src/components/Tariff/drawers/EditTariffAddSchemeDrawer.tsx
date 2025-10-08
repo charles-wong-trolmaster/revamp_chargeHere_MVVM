@@ -12,7 +12,7 @@ const EditTariffAddSchemeDrawer: React.FC<SessionHistoryDrawerProps> = ({
   widthMultiplier,
 }) => {
   return (
-    <Drawer id={id} widthMultiplier={widthMultiplier}>
+    <Drawer id={id} widthMultiplier={2}>
       <EditTariffAddScheme drawerId={id} />
     </Drawer>
   );

@@ -11,6 +11,7 @@
     "sass": "sass --load-path=node_modules src/styles:public/styles --watch"
   },
   "dependencies": {
+    "@amcharts/amcharts5": "^5.14.2",
     "@react-google-maps/api": "^2.20.7",
     "@reduxjs/toolkit": "^2.9.0",
     "framer-motion": "^12.23.18",
