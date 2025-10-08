@@ -1,18 +1,28 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import DrawerCloseButton from "../../Common/DrawerCloseButton";
 import { useDrawer } from "@/hooks/useDrawer";
+import { ITariff, Scheme, Tariff } from "@/entities";
 interface TariffFormData {
   name: string;
   description: string;
 }
 interface TariffCreationContentProps {
+  initialData: ITariff;
   onCreateClick?: (data: TariffFormData) => void;
   onCancelClick?: () => void;
+  onSchemeListAddClick?: () => void;
+  onSchemeItemClick?: (scheme: Scheme, index: number) => void;
 }
 
 const Creation = (props: TariffCreationContentProps) => {
-  const { onCreateClick, onCancelClick } = props;
+  const {
+    initialData,
+    onCreateClick,
+    onCancelClick,
+    onSchemeListAddClick,
+    onSchemeItemClick,
+  } = props;
   const { openChild } = useDrawer();
 
   const {
@@ -58,6 +68,11 @@ const Creation = (props: TariffCreationContentProps) => {
       onCancelClick();
     }
   };
+
+  const tariffData = useMemo(
+    () => initialData && Tariff.fromObject(initialData),
+    [initialData]
+  );
 
   return (
     <>
@@ -112,6 +127,55 @@ const Creation = (props: TariffCreationContentProps) => {
             {errors.description && (
               <div className="uk-text-danger uk-text-small uk-margin-small-top">
                 {errors.description.message}
+              </div>
+            )}
+          </div>
+          {/* Scheme List Header */}
+          <div className="uk-padding-small  uk-width-1-2">
+            <span className="uk-text-emphasis uk-margin-remove uk-text-bold uk-width-1-2">
+              Scheme List
+            </span>
+            <button
+              className="uk-button uk-button-link uk-text-white uk-margin-small uk-width-1-2"
+              onClick={() => {
+                if (onSchemeListAddClick) {
+                  onSchemeListAddClick();
+                }
+                // setEditingScheme(undefined);
+                // setEditingSchemeIndex(undefined);
+                // console.log("qqq Add");
+                // schemeListPanel.open();
+              }}
+            >
+              +{/* <SvgIcon icon={plusOutlineIcon} size="large" /> */}
+            </button>
+          </div>
+          {/* Scheme List Content */}
+          <div className="">
+            {tariffData && tariffData.getSchemeCount() > 0 ? (
+              tariffData.getSchemes().map((scheme: Scheme, index: number) => (
+                <button
+                  key={`scheme-${index}`}
+                  onClick={() => {
+                    if (onSchemeItemClick) {
+                      onSchemeItemClick(scheme, index);
+                    }
+                    // setEditingScheme(scheme);
+                    // setEditingSchemeIndex(index);
+                    // schemeListPanel.open();
+                  }}
+                  className="uk-button uk-button-link uk-width-1-1 uk-text-left uk-text-white uk-padding uk-border-bottom"
+                >
+                  <div className="uk-flex uk-flex-middle">
+                    <div className="uk-flex uk-flex-column uk-margin-left">
+                      <span className="uk-text-small">{scheme.name}</span>
+                    </div>
+                  </div>
+                </button>
+              ))
+            ) : (
+              <div className=" uk-text-center uk-text-muted">
+                No scheme found
               </div>
             )}
           </div>
